@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>LionSimPlanner.API</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.1" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.13.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LionSimPlanner.Shared\LionSimPlanner.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Personnel\LionSimPlanner.Personnel.Application\LionSimPlanner.Personnel.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\LionSimPlanner.Personnel.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Scheduling\LionSimPlanner.Scheduling.Application\LionSimPlanner.Scheduling.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\LionSimPlanner.Scheduling.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Asset\LionSimPlanner.Asset.Application\LionSimPlanner.Asset.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\LionSimPlanner.Asset.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Notifications\LionSimPlanner.Notifications\LionSimPlanner.Notifications.csproj" />
+  </ItemGroup>
+</Project>

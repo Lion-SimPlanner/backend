@@ -1,0 +1,17 @@
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Asset.Application.deps.json
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Asset.Application.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Asset.Application.pdb
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.pdb
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.csproj.AssemblyReference.cache
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.AssemblyInfoInputs.cache
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.AssemblyInfo.cs
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.csproj.CoreCompileInputs.cache
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimP.AE772C05.Up2Date
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\refint\LionSimPlanner.Asset.Application.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\LionSimPlanner.Asset.Application.pdb
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\obj\Debug\net10.0\ref\LionSimPlanner.Asset.Application.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Application\bin\Debug\net10.0\LionSimPlanner.Shared.pdb

@@ -1,0 +1,12 @@
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.csproj.AssemblyReference.cache
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.AssemblyInfoInputs.cache
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.AssemblyInfo.cs
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.csproj.CoreCompileInputs.cache
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\bin\Debug\net10.0\LionSimPlanner.Notifications.deps.json
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\bin\Debug\net10.0\LionSimPlanner.Notifications.dll
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\bin\Debug\net10.0\LionSimPlanner.Notifications.pdb
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.dll
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\refint\LionSimPlanner.Notifications.dll
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.pdb
+c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\ref\LionSimPlanner.Notifications.dll

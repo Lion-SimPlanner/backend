@@ -1,0 +1,14 @@
+C:\Users\user\Documents\Lion SimPlanner\bin\Debug\net10.0\Lion SimPlanner.exe
+C:\Users\user\Documents\Lion SimPlanner\bin\Debug\net10.0\Lion SimPlanner.deps.json
+C:\Users\user\Documents\Lion SimPlanner\bin\Debug\net10.0\Lion SimPlanner.runtimeconfig.json
+C:\Users\user\Documents\Lion SimPlanner\bin\Debug\net10.0\Lion SimPlanner.dll
+C:\Users\user\Documents\Lion SimPlanner\bin\Debug\net10.0\Lion SimPlanner.pdb
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.dll
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\refint\Lion SimPlanner.dll
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.pdb
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\Lion SimPlanner.genruntimeconfig.cache
+C:\Users\user\Documents\Lion SimPlanner\obj\Debug\net10.0\ref\Lion SimPlanner.dll

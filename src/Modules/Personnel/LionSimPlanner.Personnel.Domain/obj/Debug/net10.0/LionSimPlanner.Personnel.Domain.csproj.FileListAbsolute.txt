@@ -1,0 +1,11 @@
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.deps.json
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.pdb
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\LionSimPlanner.Personnel.Domain.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\LionSimPlanner.Personnel.Domain.AssemblyInfoInputs.cache
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\LionSimPlanner.Personnel.Domain.AssemblyInfo.cs
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\LionSimPlanner.Personnel.Domain.csproj.CoreCompileInputs.cache
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\LionSimPlanner.Personnel.Domain.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\refint\LionSimPlanner.Personnel.Domain.dll
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\LionSimPlanner.Personnel.Domain.pdb
+c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Domain\obj\Debug\net10.0\ref\LionSimPlanner.Personnel.Domain.dll

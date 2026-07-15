@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--
+      Root = c:\Users\user\Documents\Lion SimPlanner\
+      This project = src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\
+      Shared        = src\LionSimPlanner.Shared\   (4 levels up → root → src\)
+    -->
+    <ProjectReference Include="..\..\..\..\src\LionSimPlanner.Shared\LionSimPlanner.Shared.csproj" />
+  </ItemGroup>
+</Project>

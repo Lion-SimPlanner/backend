@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/Notifications/">
+    <Project Path="Notifications/LionSimPlanner.Notifications/LionSimPlanner.Notifications.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/LionSimPlanner.API/LionSimPlanner.API.csproj" />
+    <Project Path="src/LionSimPlanner.Shared/LionSimPlanner.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Asset/">
+    <Project Path="src/Modules/Asset/LionSimPlanner.Asset.Application/LionSimPlanner.Asset.Application.csproj" />
+    <Project Path="src/Modules/Asset/LionSimPlanner.Asset.Domain/LionSimPlanner.Asset.Domain.csproj" />
+    <Project Path="src/Modules/Asset/LionSimPlanner.Asset.Infrastructure/LionSimPlanner.Asset.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Personnel/">
+    <Project Path="src/Modules/Personnel/LionSimPlanner.Personnel.Application/LionSimPlanner.Personnel.Application.csproj" />
+    <Project Path="src/Modules/Personnel/LionSimPlanner.Personnel.Domain/LionSimPlanner.Personnel.Domain.csproj" />
+    <Project Path="src/Modules/Personnel/LionSimPlanner.Personnel.Infrastructure/LionSimPlanner.Personnel.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Scheduling/">
+    <Project Path="src/Modules/Scheduling/LionSimPlanner.Scheduling.Application/LionSimPlanner.Scheduling.Application.csproj" />
+    <Project Path="src/Modules/Scheduling/LionSimPlanner.Scheduling.Domain/LionSimPlanner.Scheduling.Domain.csproj" />
+    <Project Path="src/Modules/Scheduling/LionSimPlanner.Scheduling.Infrastructure/LionSimPlanner.Scheduling.Infrastructure.csproj" />
+  </Folder>
+</Solution>
