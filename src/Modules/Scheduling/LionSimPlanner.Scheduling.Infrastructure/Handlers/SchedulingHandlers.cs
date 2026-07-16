@@ -4,8 +4,10 @@ using LionSimPlanner.Scheduling.Domain.Entities;
 using LionSimPlanner.Scheduling.Domain.Enums;
 using LionSimPlanner.Scheduling.Domain.Validation;
 using LionSimPlanner.Shared.Events;
+using LionSimPlanner.Shared.Hubs;
 using LionSimPlanner.Shared.Queries;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -151,6 +153,7 @@ public sealed class StartSessionHandler(SchedulingDbContext db) : IRequestHandle
 public sealed class CompleteGradingHandler(
     SchedulingDbContext db,
     IPublisher publisher,
+    IHubContext<SimPlannerHub> hubContext,
     ILogger<CompleteGradingHandler> logger)
     : IRequestHandler<CompleteGradingCommand, CompleteGradingResult>
 {
@@ -175,7 +178,15 @@ public sealed class CompleteGradingHandler(
         logger.LogInformation("[Grading] Session {Id} COMPLETED. Grade: {Grade}.",
             session.SessionId, session.GradeStatus);
 
-        // Fire notification — Personnel module handles CMS POST via MediatR
+        await hubContext.Clients.All.SendAsync("SessionGraded", new
+        {
+            sessionId = session.SessionId,
+            status = "Completed",
+            gradeStatus = session.GradeStatus,
+            syllabusId = session.SyllabusId,
+            traineeEmployeeCode = session.TraineeEmployeeCode
+        }, ct);
+
         await publisher.Publish(new TrainingRecordCompletedNotification(
             session.SessionId,
             req.TraineeEmployeeCode,

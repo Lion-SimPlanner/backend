@@ -21,3 +21,27 @@ c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Sc
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.pdb
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.genruntimeconfig.cache
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\ref\LionSimPlanner.Scheduling.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.runtimeconfig.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Notifications.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Application.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Notifications.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Scheduling.Application.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimP.4C82C4BF.Up2Date
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\refint\LionSimPlanner.Scheduling.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Scheduling.Infrastructure.genruntimeconfig.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\obj\Debug\net10.0\ref\LionSimPlanner.Scheduling.Infrastructure.dll

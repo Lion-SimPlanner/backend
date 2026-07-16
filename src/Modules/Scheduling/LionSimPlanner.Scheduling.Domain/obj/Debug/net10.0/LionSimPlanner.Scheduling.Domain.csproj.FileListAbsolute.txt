@@ -13,3 +13,19 @@ c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Sc
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\refint\LionSimPlanner.Scheduling.Domain.dll
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.pdb
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\ref\LionSimPlanner.Scheduling.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\bin\Debug\net10.0\LionSimPlanner.Scheduling.Domain.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\bin\Debug\net10.0\LionSimPlanner.Scheduling.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\bin\Debug\net10.0\LionSimPlanner.Scheduling.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimP.71938BA6.Up2Date
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\refint\LionSimPlanner.Scheduling.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\LionSimPlanner.Scheduling.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Scheduling\LionSimPlanner.Scheduling.Domain\obj\Debug\net10.0\ref\LionSimPlanner.Scheduling.Domain.dll

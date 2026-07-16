@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "e8q+/zpb/oQ=",
+  "dgSpecHash": "uemajiH5opQ=",
   "success": true,
-  "projectFilePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\bouncycastle.cryptography\\2.5.0\\bouncycastle.cryptography.2.5.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
@@ -23,17 +23,9 @@
     "C:\\Users\\user\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\9.0.4\\microsoft.entityframeworkcore.analyzers.9.0.4.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.entityframeworkcore.design\\9.0.4\\microsoft.entityframeworkcore.design.9.0.4.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\9.0.4\\microsoft.entityframeworkcore.relational.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\9.0.4\\microsoft.extensions.caching.abstractions.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.4\\microsoft.extensions.caching.memory.9.0.4.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.4\\microsoft.extensions.configuration.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.4\\microsoft.extensions.configuration.abstractions.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\9.0.4\\microsoft.extensions.dependencyinjection.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.4\\microsoft.extensions.dependencyinjection.abstractions.9.0.4.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencymodel\\9.0.4\\microsoft.extensions.dependencymodel.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.logging\\9.0.4\\microsoft.extensions.logging.9.0.4.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.4\\microsoft.extensions.logging.abstractions.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.options\\9.0.4\\microsoft.extensions.options.9.0.4.nupkg.sha512",
-    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.4\\microsoft.extensions.primitives.9.0.4.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mimekit\\4.9.0\\mimekit.4.9.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\npgsql\\9.0.3\\npgsql.9.0.3.nupkg.sha512",
@@ -49,12 +41,36 @@
   ],
   "logs": [
     {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference Microsoft.Extensions.Configuration will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "libraryId": "Microsoft.Extensions.Configuration",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference Microsoft.Extensions.Logging.Abstractions will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "libraryId": "Microsoft.Extensions.Logging.Abstractions",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'MailKit' 4.9.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "filePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
       "libraryId": "MailKit",
       "targetGraphs": [
         "net10.0"
@@ -64,9 +80,9 @@
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'MimeKit' 4.9.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-g7hc-96xr-gvvx",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
+      "filePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj",
       "libraryId": "MimeKit",
       "targetGraphs": [
         "net10.0"

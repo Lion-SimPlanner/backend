@@ -6,6 +6,9 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
@@ -17,12 +20,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <!--
-      Root = c:\Users\user\Documents\Lion SimPlanner\
-      This project = src\Modules\Scheduling\LionSimPlanner.Scheduling.Infrastructure\
-      Shared        = src\LionSimPlanner.Shared\   (4 levels up → root → src\)
-      Notifications = Notifications\LionSimPlanner.Notifications\  (4 levels up → root → Notifications\)
-    -->
     <ProjectReference Include="..\..\..\..\src\LionSimPlanner.Shared\LionSimPlanner.Shared.csproj" />
     <ProjectReference Include="..\..\..\..\Notifications\LionSimPlanner.Notifications\LionSimPlanner.Notifications.csproj" />
     <ProjectReference Include="..\LionSimPlanner.Scheduling.Domain\LionSimPlanner.Scheduling.Domain.csproj" />

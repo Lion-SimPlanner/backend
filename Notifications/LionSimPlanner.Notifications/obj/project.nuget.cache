@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "k7NNHW5bjp0=",
+  "dgSpecHash": "Ac3dP/Millc=",
   "success": true,
-  "projectFilePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\bouncycastle.cryptography\\2.5.0\\bouncycastle.cryptography.2.5.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mailkit\\4.9.0\\mailkit.4.9.0.nupkg.sha512",
@@ -18,9 +18,9 @@
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'MailKit' 4.9.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+      "filePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
       "libraryId": "MailKit",
       "targetGraphs": [
         "net10.0"
@@ -30,9 +30,9 @@
       "code": "NU1902",
       "level": "Warning",
       "message": "Package 'MimeKit' 4.9.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-g7hc-96xr-gvvx",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+      "filePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
       "libraryId": "MimeKit",
       "targetGraphs": [
         "net10.0"

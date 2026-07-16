@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kc0rq954UYA=",
+  "dgSpecHash": "yFhfy7ik9kM=",
   "success": true,
-  "projectFilePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mediatr\\12.4.1\\mediatr.12.4.1.nupkg.sha512",

@@ -19,3 +19,25 @@ c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Per
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.pdb
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.genruntimeconfig.cache
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\ref\LionSimPlanner.Personnel.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.runtimeconfig.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Application.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Personnel.Application.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimP.BE3FE4DB.Up2Date
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\refint\LionSimPlanner.Personnel.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Personnel.Infrastructure.genruntimeconfig.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Infrastructure\obj\Debug\net10.0\ref\LionSimPlanner.Personnel.Infrastructure.dll

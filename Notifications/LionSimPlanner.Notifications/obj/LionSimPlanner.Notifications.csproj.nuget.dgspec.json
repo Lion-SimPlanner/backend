@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj": {}
+    "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj": {}
   },
   "projects": {
-    "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj": {
+    "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+        "projectUniqueName": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
         "projectName": "LionSimPlanner.Notifications",
-        "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
+        "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\obj\\",
+        "outputPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"

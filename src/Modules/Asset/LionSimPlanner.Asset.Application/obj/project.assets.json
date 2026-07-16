@@ -69,7 +69,10 @@
         },
         "runtime": {
           "bin/placeholder/LionSimPlanner.Shared.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -161,11 +164,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj",
       "projectName": "LionSimPlanner.Asset.Application",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\obj\\",
+      "outputPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -181,11 +184,11 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj"
             }
           }
         }

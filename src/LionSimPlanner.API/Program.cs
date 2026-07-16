@@ -1,3 +1,5 @@
+using LionSimPlanner.Shared.Hubs;
+using LionSimPlanner.API.Seeding;
 using LionSimPlanner.Asset.Infrastructure;
 using LionSimPlanner.Notifications;
 using LionSimPlanner.Personnel.Infrastructure;
@@ -12,9 +14,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Controllers + Swagger
-// ─────────────────────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -44,9 +43,6 @@ builder.Services.AddSwaggerGen(c =>
     }});
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// JWT Authentication (RBAC)
-// ─────────────────────────────────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key is not configured.");
 
@@ -64,6 +60,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime         = true,
             ClockSkew                = TimeSpan.Zero
         };
+
+        o.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                var accessToken = ctx.Request.Query["access_token"];
+                var path = ctx.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub/simplanner"))
+                    ctx.Token = accessToken;
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization(opts =>
@@ -74,21 +82,18 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy("PilotOrAbove",   p => p.RequireRole("Pilot", "Instructor", "Admin"));
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CORS (for frontend SPA — defaults to localhost Vite dev server)
-// ─────────────────────────────────────────────────────────────────────────────
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:5173", "http://localhost:3000"];
+
 builder.Services.AddCors(opts =>
     opts.AddPolicy("Frontend", p => p
-        .WithOrigins(
-            builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? ["http://localhost:5173", "http://localhost:3000"])
+        .WithOrigins(allowedOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod()));
+        .AllowAnyMethod()
+        .AllowCredentials()));
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EF Core — three schema-isolated DbContexts, one PostgreSQL database
-// Each uses its own migrations history table so migrations never conflict.
-// ─────────────────────────────────────────────────────────────────────────────
+builder.Services.AddSignalR();
+
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
 
@@ -104,30 +109,18 @@ builder.Services.AddDbContext<AssetDbContext>(o =>
     o.UseNpgsql(connectionString,
         npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "maint")));
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MediatR — scan Infrastructure assemblies where all handlers now live.
-// Handlers were moved from Application → Infrastructure to eliminate circular deps.
-// The in-process bus enforces all cross-module communication.
-// ─────────────────────────────────────────────────────────────────────────────
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblies(
-        // Infrastructure assemblies — contain all MediatR handlers
-        typeof(PersonnelDbContext).Assembly,          // Personnel.Infrastructure
-        typeof(SchedulingDbContext).Assembly,          // Scheduling.Infrastructure
-        typeof(AssetDbContext).Assembly                // Asset.Infrastructure
+        typeof(PersonnelDbContext).Assembly,
+        typeof(SchedulingDbContext).Assembly,
+        typeof(AssetDbContext).Assembly
     );
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Email Notification Service (Gmail SMTP via MailKit)
-// ─────────────────────────────────────────────────────────────────────────────
 builder.Services.Configure<GmailOptions>(builder.Configuration.GetSection("Notifications:Gmail"));
 builder.Services.AddSingleton<IEmailNotificationService, EmailNotificationService>();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CMS Integration — typed HttpClient + options
-// ─────────────────────────────────────────────────────────────────────────────
 builder.Services.Configure<CmsOptions>(builder.Configuration.GetSection("Cms"));
 builder.Services.AddHttpClient<CmsApiClient>((sp, client) =>
 {
@@ -137,9 +130,6 @@ builder.Services.AddHttpClient<CmsApiClient>((sp, client) =>
         client.DefaultRequestHeaders.Add("X-API-Key", opts.ApiKey);
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Quartz.NET — daily midnight CMS roster sync
-// ─────────────────────────────────────────────────────────────────────────────
 builder.Services.AddQuartz(q =>
 {
     var jobKey = new JobKey("CmsSyncJob", "CmsSync");
@@ -154,9 +144,6 @@ builder.Services.AddQuartz(q =>
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Build & pipeline
-// ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -165,7 +152,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lion SimPlanner API v1");
-        c.RoutePrefix = string.Empty;   // Swagger at root "/"
+        c.RoutePrefix = string.Empty;
     });
 }
 
@@ -173,10 +160,8 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<SimPlannerHub>("/hub/simplanner");
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Auto-migrate all three DbContexts on startup (development convenience)
-// ─────────────────────────────────────────────────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
@@ -184,14 +169,20 @@ if (app.Environment.IsDevelopment())
     var log = svc.GetRequiredService<ILogger<Program>>();
     try
     {
-        await svc.GetRequiredService<PersonnelDbContext>().Database.MigrateAsync();
-        await svc.GetRequiredService<SchedulingDbContext>().Database.MigrateAsync();
-        await svc.GetRequiredService<AssetDbContext>().Database.MigrateAsync();
+        var hrDb    = svc.GetRequiredService<PersonnelDbContext>();
+        var schedDb = svc.GetRequiredService<SchedulingDbContext>();
+        var maintDb = svc.GetRequiredService<AssetDbContext>();
+
+        await hrDb.Database.MigrateAsync();
+        await schedDb.Database.MigrateAsync();
+        await maintDb.Database.MigrateAsync();
         log.LogInformation("All three DbContexts migrated successfully.");
+
+        await LionSimPlannerSeeder.SeedAsync(hrDb, maintDb, schedDb, log);
     }
     catch (Exception ex)
     {
-        log.LogError(ex, "Database migration failed on startup — ensure PostgreSQL is running.");
+        log.LogError(ex, "Database migration or seeding failed on startup.");
     }
 }
 

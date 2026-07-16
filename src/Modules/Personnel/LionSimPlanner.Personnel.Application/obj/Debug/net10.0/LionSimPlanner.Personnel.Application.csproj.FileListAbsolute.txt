@@ -15,3 +15,21 @@ c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Per
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\ref\LionSimPlanner.Personnel.Application.dll
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Shared.dll
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Personnel.Application.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Personnel.Application.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Personnel.Application.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\bin\Debug\net10.0\LionSimPlanner.Personnel.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimP.747273FD.Up2Date
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\refint\LionSimPlanner.Personnel.Application.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\LionSimPlanner.Personnel.Application.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Personnel\LionSimPlanner.Personnel.Application\obj\Debug\net10.0\ref\LionSimPlanner.Personnel.Application.dll

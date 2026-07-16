@@ -1,24 +1,54 @@
 using LionSimPlanner.Asset.Application.Commands;
+using LionSimPlanner.Asset.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LionSimPlanner.API.Controllers;
 
-/// <summary>
-/// Asset/hardware management for the Simulator Engineer role.
-/// Setting status to "Down" automatically cascades session cancellations via MediatR.
-/// </summary>
 [ApiController]
 [Route("api/asset")]
-[Authorize]
-public class AssetController(ISender mediator) : ControllerBase
+public class AssetController(ISender mediator, AssetDbContext db) : ControllerBase
 {
-    /// <summary>
-    /// [AOG Trigger] Change simulator operational status.
-    /// Status = "Down" → publishes SimulatorAOGNotification → bulk-cancels sessions → emails crew.
-    /// Requires Engineer role.
-    /// </summary>
+    [HttpGet("simulators")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSimulators(CancellationToken ct)
+    {
+        var sims = await db.Simulators.AsNoTracking()
+            .Select(s => new
+            {
+                id              = s.SimulatorId,
+                name            = s.Name,
+                bayNumber       = s.BayNumber,
+                aircraftType    = s.AircraftType,
+                status          = s.Status,
+                lastChangedAt   = s.LastStatusChangedAt
+            })
+            .ToListAsync(ct);
+        return Ok(sims);
+    }
+
+    [HttpGet("engineers")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEngineers(CancellationToken ct)
+    {
+        var engineers = await db.Engineers.AsNoTracking()
+            .Select(e => new
+            {
+                id              = e.EngineerID,
+                employeeCode    = e.EmployeeCode,
+                name            = e.FullName,
+                clearanceLevel  = e.ClearanceLevel,
+                hardwareRatings = e.HardwareRatings,
+                shiftStart      = e.ShiftStartTime,
+                shiftEnd        = e.ShiftEndTime,
+                isOnCall        = e.IsOnCall
+            })
+            .ToListAsync(ct);
+        return Ok(engineers);
+    }
+
     [HttpPost("simulators/{id}/status")]
     [Authorize(Roles = "Engineer")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -51,11 +81,6 @@ public class AssetController(ISender mediator) : ControllerBase
         });
     }
 
-    /// <summary>
-    /// [Maintenance Shield] Daily readiness checklist sign-off.
-    /// IsCleared=true raises the shield, allowing the Validation Gate to publish sessions.
-    /// Requires Engineer role.
-    /// </summary>
     [HttpPost("maintenance/checklist")]
     [Authorize(Roles = "Engineer")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -89,7 +114,6 @@ public class AssetController(ISender mediator) : ControllerBase
     }
 }
 
-// ── Request DTOs ──────────────────────────────────────────────────────────────
 public record SetSimulatorStatusRequest(string Status, string? FaultDescription);
 public record SubmitChecklistRequest(
     Guid SimulatorId, DateOnly ChecklistDate, bool IsCleared, string Notes, string? BlockingReason);

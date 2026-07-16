@@ -1,9 +1,11 @@
+using LionSimPlanner.Shared.Hubs;
 using LionSimPlanner.Asset.Application.Commands;
 using LionSimPlanner.Asset.Domain.Entities;
 using LionSimPlanner.Shared.Dtos;
 using LionSimPlanner.Shared.Events;
 using LionSimPlanner.Shared.Queries;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,6 +17,7 @@ namespace LionSimPlanner.Asset.Infrastructure.Handlers;
 public sealed class SetSimulatorStatusHandler(
     AssetDbContext db,
     IPublisher publisher,
+    IHubContext<SimPlannerHub> hubContext,
     ILogger<SetSimulatorStatusHandler> logger)
     : IRequestHandler<SetSimulatorStatusCommand, SetSimulatorStatusResult>
 {
@@ -44,6 +47,16 @@ public sealed class SetSimulatorStatusHandler(
                 req.EngineerCode,
                 req.FaultDescription,
                 DateTime.UtcNow), ct);
+
+            await hubContext.Clients.All.SendAsync("AogReported", new
+            {
+                simulatorId = req.SimulatorId,
+                simulatorName = simulator.Name,
+                status = "Down",
+                reportedBy = req.EngineerCode,
+                faultDescription = req.FaultDescription,
+                occurredAt = DateTime.UtcNow
+            }, ct);
         }
 
         return new SetSimulatorStatusResult(true, null);

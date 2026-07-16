@@ -1,5 +1,6 @@
 using LionSimPlanner.Personnel.Infrastructure.CmsSync;
 using LionSimPlanner.Shared.Dtos;
+using LionSimPlanner.Shared.Events;
 using LionSimPlanner.Shared.Queries;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace LionSimPlanner.Personnel.Infrastructure.Handlers;
 
-/// <summary>
-/// Handles GetPriorityQueueQuery from the Scheduling module.
-/// Lives in Personnel.Infrastructure (needs PersonnelDbContext).
-/// Returns only PilotPriorityDto — the Personnel domain model never crosses module boundaries.
-/// </summary>
 public sealed class GetPriorityQueueHandler(PersonnelDbContext db)
     : IRequestHandler<GetPriorityQueueQuery, IReadOnlyList<PilotPriorityDto>>
 {
@@ -24,12 +20,16 @@ public sealed class GetPriorityQueueHandler(PersonnelDbContext db)
         if (!string.IsNullOrWhiteSpace(request.SyllabusFilter))
             query = query.Where(p => p.RequiredSyllabus == request.SyllabusFilter);
 
-        if (!string.IsNullOrWhiteSpace(request.TypeRatingFilter))
-            query = query.Where(p =>
-                p.TypeRatings.Contains(request.TypeRatingFilter));
-
         var pilots = await query
             .OrderBy(p => p.NextTrainingDue)
+            .ToListAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(request.TypeRatingFilter))
+            pilots = pilots
+                .Where(p => p.TypeRatings.Contains(request.TypeRatingFilter))
+                .ToList();
+
+        return pilots
             .Select(p => new PilotPriorityDto(
                 p.PilotId,
                 p.EmployeeCode,
@@ -41,17 +41,11 @@ public sealed class GetPriorityQueueHandler(PersonnelDbContext db)
                 p.MedicalExpiry,
                 p.LastDutyEndTime,
                 p.NextDutyStartTime))
-            .ToListAsync(cancellationToken);
-
-        return pilots.AsReadOnly();
+            .ToList()
+            .AsReadOnly();
     }
 }
 
-/// <summary>
-/// Handles GetInstructorByIdQuery from the Scheduling module (defined in Shared).
-/// Resolves in Personnel.Infrastructure — MediatR routes the query here at runtime.
-/// No Scheduling → Personnel project reference exists; isolation is enforced.
-/// </summary>
 public sealed class GetInstructorByIdHandler(PersonnelDbContext db)
     : IRequestHandler<GetInstructorByIdQuery, InstructorValidationData?>
 {
@@ -59,36 +53,32 @@ public sealed class GetInstructorByIdHandler(PersonnelDbContext db)
         GetInstructorByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var i = await db.Instructors
+        var instructor = await db.Instructors
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.InstructorId == request.InstructorId, cancellationToken);
 
-        if (i is null) return null;
+        if (instructor is null) return null;
 
         return new InstructorValidationData(
-            i.InstructorId,
-            i.EmployeeCode,
-            i.FullName,
-            i.CertifiedTypes.AsReadOnly(),
-            i.AuthorizedSyllabi.AsReadOnly(),
-            i.LicenseExpiry,
-            i.LastDutyEndTime,
-            i.CurrentMonthlyHours,
-            i.MaxMonthlyHours);
+            instructor.InstructorId,
+            instructor.EmployeeCode,
+            instructor.FullName,
+            instructor.CertifiedTypes.AsReadOnly(),
+            instructor.AuthorizedSyllabi.AsReadOnly(),
+            instructor.LicenseExpiry,
+            instructor.LastDutyEndTime,
+            instructor.CurrentMonthlyHours,
+            instructor.MaxMonthlyHours);
     }
 }
 
-/// <summary>
-/// Handles TrainingRecordCompletedNotification published by Scheduling.
-/// POSTs the training record to the external CMS — lifecycle step 6.
-/// </summary>
 public sealed class HandleTrainingRecordCompletedHandler(
     CmsApiClient cmsClient,
-    Microsoft.Extensions.Logging.ILogger<HandleTrainingRecordCompletedHandler> logger)
-    : INotificationHandler<LionSimPlanner.Shared.Events.TrainingRecordCompletedNotification>
+    ILogger<HandleTrainingRecordCompletedHandler> logger)
+    : INotificationHandler<TrainingRecordCompletedNotification>
 {
     public async Task Handle(
-        LionSimPlanner.Shared.Events.TrainingRecordCompletedNotification notification,
+        TrainingRecordCompletedNotification notification,
         CancellationToken cancellationToken)
     {
         logger.LogInformation(

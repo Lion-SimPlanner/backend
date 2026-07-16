@@ -2,6 +2,19 @@
   "version": 4,
   "targets": {
     "net10.0": {
+      "Bogus/35.6.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Bogus.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Bogus.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "BouncyCastle.Cryptography/2.5.0": {
         "type": "package",
         "compile": {
@@ -1026,7 +1039,10 @@
         },
         "runtime": {
           "bin/placeholder/LionSimPlanner.Asset.Infrastructure.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       },
       "LionSimPlanner.Notifications/1.0.0": {
         "type": "project",
@@ -1132,7 +1148,10 @@
         },
         "runtime": {
           "bin/placeholder/LionSimPlanner.Scheduling.Infrastructure.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       },
       "LionSimPlanner.Shared/1.0.0": {
         "type": "project",
@@ -1145,11 +1164,33 @@
         },
         "runtime": {
           "bin/placeholder/LionSimPlanner.Shared.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
   "libraries": {
+    "Bogus/35.6.1": {
+      "sha512": "QPJ8zLL0ScEunEoUNhMDigD4ykA/n7vXCZUQdGCFGHBfP2mNYjiCzR9Cj12eaFaDlwkhIC1HKQZihWl8OgbLsw==",
+      "type": "package",
+      "path": "bogus/35.6.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bogus.35.6.1.nupkg.sha512",
+        "bogus.nuspec",
+        "lib/net40/Bogus.dll",
+        "lib/net40/Bogus.xml",
+        "lib/net6.0/Bogus.dll",
+        "lib/net6.0/Bogus.xml",
+        "lib/netstandard1.3/Bogus.dll",
+        "lib/netstandard1.3/Bogus.xml",
+        "lib/netstandard2.0/Bogus.dll",
+        "lib/netstandard2.0/Bogus.xml"
+      ]
+    },
     "BouncyCastle.Cryptography/2.5.0": {
       "sha512": "rc7vRCq/KD3GtIwSgRtjanGaBwTb9nLenFDZnEcauWlssuuEoxcbMfWA3QWWho6QDMSOSkWjs657McdHzEtEcw==",
       "type": "package",
@@ -3272,6 +3313,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "Bogus >= 35.6.1",
       "LionSimPlanner.Asset.Application >= 1.0.0",
       "LionSimPlanner.Asset.Infrastructure >= 1.0.0",
       "LionSimPlanner.Notifications >= 1.0.0",
@@ -3295,11 +3337,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.API\\LionSimPlanner.API.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.API\\LionSimPlanner.API.csproj",
       "projectName": "LionSimPlanner.API",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.API\\LionSimPlanner.API.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.API\\LionSimPlanner.API.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.API\\obj\\",
+      "outputPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -3315,29 +3357,29 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\Notifications\\LionSimPlanner.Notifications\\LionSimPlanner.Notifications.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Application\\LionSimPlanner.Asset.Application.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Infrastructure\\LionSimPlanner.Asset.Infrastructure.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Infrastructure\\LionSimPlanner.Asset.Infrastructure.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Infrastructure\\LionSimPlanner.Asset.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Infrastructure\\LionSimPlanner.Asset.Infrastructure.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Application\\LionSimPlanner.Scheduling.Application.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Application\\LionSimPlanner.Scheduling.Application.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Application\\LionSimPlanner.Scheduling.Application.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Application\\LionSimPlanner.Scheduling.Application.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Infrastructure\\LionSimPlanner.Scheduling.Infrastructure.csproj"
             }
           }
         }
@@ -3359,6 +3401,10 @@
         "framework": "net10.0",
         "targetAlias": "net10.0",
         "dependencies": {
+          "Bogus": {
+            "target": "Package",
+            "version": "[35.6.1, )"
+          },
           "MediatR": {
             "target": "Package",
             "version": "[12.4.1, )"

@@ -10,3 +10,16 @@ c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notificatio
 c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\refint\LionSimPlanner.Notifications.dll
 c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.pdb
 c:\Users\user\Documents\Lion SimPlanner\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\ref\LionSimPlanner.Notifications.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\bin\Debug\net10.0\LionSimPlanner.Notifications.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\bin\Debug\net10.0\LionSimPlanner.Notifications.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\bin\Debug\net10.0\LionSimPlanner.Notifications.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\refint\LionSimPlanner.Notifications.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\LionSimPlanner.Notifications.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\Notifications\LionSimPlanner.Notifications\obj\Debug\net10.0\ref\LionSimPlanner.Notifications.dll

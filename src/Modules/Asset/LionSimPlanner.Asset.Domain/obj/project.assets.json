@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj",
       "projectName": "LionSimPlanner.Asset.Domain",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\LionSimPlanner.Asset.Domain.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\obj\\",
+      "outputPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Asset\\LionSimPlanner.Asset.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"

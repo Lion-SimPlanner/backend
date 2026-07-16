@@ -1,19 +1,45 @@
 using LionSimPlanner.Scheduling.Application.Commands;
+using LionSimPlanner.Scheduling.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LionSimPlanner.API.Controllers;
 
-/// <summary>
-/// Core scheduling lifecycle endpoints. Maps directly to lifecycle steps 3-6 from the spec.
-/// </summary>
 [ApiController]
 [Route("api/scheduling")]
-[Authorize]
-public class SchedulingController(ISender mediator) : ControllerBase
+public class SchedulingController(ISender mediator, SchedulingDbContext db) : ControllerBase
 {
-    /// <summary>[Step 3] Create DRAFT session. Validation Gate not triggered yet.</summary>
+    [HttpGet("sessions")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSessions(CancellationToken ct)
+    {
+        var sessions = await db.Sessions.AsNoTracking()
+            .OrderBy(s => s.StartTime)
+            .Select(s => new
+            {
+                sessionId           = s.SessionId,
+                simulatorId         = s.SimulatorId,
+                sessionType         = s.SessionType.ToString(),
+                status              = s.Status.ToString(),
+                startTime           = s.StartTime,
+                endTime             = s.EndTime,
+                captainId           = s.CaptainId,
+                firstOfficerId      = s.FirstOfficerId,
+                instructorId        = s.InstructorId,
+                engineerId          = s.EngineerId,
+                syllabusId          = s.SyllabusId,
+                traineeEmployeeCode = s.TraineeEmployeeCode,
+                isGraded            = s.IsGraded,
+                gradeStatus         = s.GradeStatus,
+                instructorNotes     = s.InstructorNotes,
+                cancellationReason  = s.CancellationReason
+            })
+            .ToListAsync(ct);
+        return Ok(sessions);
+    }
+
     [HttpPost("sessions")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
@@ -27,11 +53,6 @@ public class SchedulingController(ISender mediator) : ControllerBase
         return CreatedAtAction(nameof(GetSession), new { id }, new { sessionId = id, status = "Draft" });
     }
 
-    /// <summary>
-    /// [Step 4] THE VALIDATION GATE — attempts DRAFT → SCHEDULED.
-    /// Returns HTTP 422 with a structured violations list if any FTL check fails.
-    /// Never returns a generic error — each violation is specific and human-readable.
-    /// </summary>
     [HttpPut("sessions/{id}/publish")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -48,7 +69,6 @@ public class SchedulingController(ISender mediator) : ControllerBase
             message = "Session published. Crew notification emails dispatched." });
     }
 
-    /// <summary>[Step 5] Mark session as IN_PROGRESS when operations begin.</summary>
     [HttpPut("sessions/{id}/start")]
     [Authorize(Roles = "Admin,Instructor")]
     public async Task<IActionResult> StartSession(Guid id, CancellationToken ct)
@@ -57,10 +77,6 @@ public class SchedulingController(ISender mediator) : ControllerBase
         return Ok(new { sessionId = id, status = "InProgress" });
     }
 
-    /// <summary>
-    /// [Step 6] Instructor submits digital grading form.
-    /// Triggers COMPLETED transition + CMS sync via MediatR notification (no direct CMS call here).
-    /// </summary>
     [HttpPut("sessions/{id}/grade")]
     [Authorize(Roles = "Instructor")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -77,7 +93,6 @@ public class SchedulingController(ISender mediator) : ControllerBase
         return Ok(new { sessionId = id, status = "Completed", cmsSyncTriggered = true });
     }
 
-    /// <summary>Admin manually cancels a session.</summary>
     [HttpPut("sessions/{id}/cancel")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CancelSession(
@@ -87,13 +102,17 @@ public class SchedulingController(ISender mediator) : ControllerBase
         return Ok(new { sessionId = id, status = "Cancelled" });
     }
 
-    /// <summary>Get session details (all roles).</summary>
     [HttpGet("sessions/{id}")]
-    public IActionResult GetSession(Guid id) =>
-        Ok(new { sessionId = id, note = "Full query handler — wire up GetSessionByIdQuery as needed." });
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSession(Guid id, CancellationToken ct)
+    {
+        var session = await db.Sessions.AsNoTracking()
+            .FirstOrDefaultAsync(s => s.SessionId == id, ct);
+        if (session is null) return NotFound();
+        return Ok(session);
+    }
 }
 
-// ── Request / Response DTOs ───────────────────────────────────────────────────
 public record CreateSessionRequest(
     Guid SimulatorId, string SessionType, DateTime StartTime, DateTime EndTime,
     Guid? CaptainId, Guid? FirstOfficerId, Guid? InstructorId, Guid? EngineerId,
@@ -102,8 +121,4 @@ public record CreateSessionRequest(
 public record CompleteGradingRequest(string GradeStatus, string InstructorNotes, string TraineeEmployeeCode);
 public record CancelSessionRequest(string Reason);
 
-/// <summary>
-/// HTTP 422 body returned by the Validation Gate.
-/// Each Violation is a self-contained, actionable string — the frontend renders each as a distinct error card.
-/// </summary>
 public record ValidationGateErrorResponse(string Message, IReadOnlyList<string> Violations);

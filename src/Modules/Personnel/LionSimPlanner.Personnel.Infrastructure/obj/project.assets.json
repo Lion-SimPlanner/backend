@@ -1092,7 +1092,10 @@
         },
         "runtime": {
           "bin/placeholder/LionSimPlanner.Shared.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -3113,11 +3116,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
       "projectName": "LionSimPlanner.Personnel.Infrastructure",
-      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\obj\\",
+      "outputPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -3133,14 +3136,14 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\LionSimPlanner.Shared\\LionSimPlanner.Shared.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Application\\LionSimPlanner.Personnel.Application.csproj"
             },
-            "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Domain\\LionSimPlanner.Personnel.Domain.csproj": {
-              "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Domain\\LionSimPlanner.Personnel.Domain.csproj"
+            "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Domain\\LionSimPlanner.Personnel.Domain.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Domain\\LionSimPlanner.Personnel.Domain.csproj"
             }
           }
         }

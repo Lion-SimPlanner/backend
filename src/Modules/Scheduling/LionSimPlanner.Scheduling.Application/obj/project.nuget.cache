@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ti7KgOOisWs=",
+  "dgSpecHash": "HohGNuzJ7Kw=",
   "success": true,
-  "projectFilePath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Application\\LionSimPlanner.Scheduling.Application.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Scheduling\\LionSimPlanner.Scheduling.Application\\LionSimPlanner.Scheduling.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\mediatr\\12.4.1\\mediatr.12.4.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",

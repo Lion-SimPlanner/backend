@@ -10,3 +10,16 @@ c:\Users\user\Documents\Lion SimPlanner\src\LionSimPlanner.Shared\obj\Debug\net1
 c:\Users\user\Documents\Lion SimPlanner\src\LionSimPlanner.Shared\obj\Debug\net10.0\refint\LionSimPlanner.Shared.dll
 c:\Users\user\Documents\Lion SimPlanner\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.pdb
 c:\Users\user\Documents\Lion SimPlanner\src\LionSimPlanner.Shared\obj\Debug\net10.0\ref\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\bin\Debug\net10.0\LionSimPlanner.Shared.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\refint\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.Shared\obj\Debug\net10.0\ref\LionSimPlanner.Shared.dll

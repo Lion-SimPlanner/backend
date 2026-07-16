@@ -9,3 +9,15 @@ c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.D
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\refint\LionSimPlanner.Asset.Domain.dll
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.pdb
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\ref\LionSimPlanner.Asset.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\refint\LionSimPlanner.Asset.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\LionSimPlanner.Asset.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Domain\obj\Debug\net10.0\ref\LionSimPlanner.Asset.Domain.dll

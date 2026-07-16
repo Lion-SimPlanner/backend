@@ -19,3 +19,25 @@ c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.I
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.pdb
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.genruntimeconfig.cache
 c:\Users\user\Documents\Lion SimPlanner\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\ref\LionSimPlanner.Asset.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.deps.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.runtimeconfig.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Application.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Shared.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Shared.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Domain.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\bin\Debug\net10.0\LionSimPlanner.Asset.Application.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.AssemblyInfo.cs
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.sourcelink.json
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimP.CA82AA15.Up2Date
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\refint\LionSimPlanner.Asset.Infrastructure.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.pdb
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\LionSimPlanner.Asset.Infrastructure.genruntimeconfig.cache
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\Modules\Asset\LionSimPlanner.Asset.Infrastructure\obj\Debug\net10.0\ref\LionSimPlanner.Asset.Infrastructure.dll
