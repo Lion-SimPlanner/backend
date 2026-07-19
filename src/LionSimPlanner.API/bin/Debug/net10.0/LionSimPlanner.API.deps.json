@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v10.0": {
       "LionSimPlanner.API/1.0.0": {
         "dependencies": {
+          "BCrypt.Net-Next": "4.0.2",
           "Bogus": "35.6.1",
           "LionSimPlanner.Asset.Application": "1.0.0",
           "LionSimPlanner.Asset.Infrastructure": "1.0.0",
@@ -27,6 +28,14 @@
         },
         "runtime": {
           "LionSimPlanner.API.dll": {}
+        }
+      },
+      "BCrypt.Net-Next/4.0.2": {
+        "runtime": {
+          "lib/net5.0/BCrypt.Net-Next.dll": {
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.0.2.0"
+          }
         }
       },
       "Bogus/35.6.1": {
@@ -843,6 +852,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BCrypt.Net-Next/4.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LyNKpIpr4GraRD9+xlTviyxxbZpF6J4xJf7DvraC1mR8PSN/KonGc4rt8C/fjkD3vaEvgA7BcvsbHFCOjgczyQ==",
+      "path": "bcrypt.net-next/4.0.2",
+      "hashPath": "bcrypt.net-next.4.0.2.nupkg.sha512"
     },
     "Bogus/35.6.1": {
       "type": "package",

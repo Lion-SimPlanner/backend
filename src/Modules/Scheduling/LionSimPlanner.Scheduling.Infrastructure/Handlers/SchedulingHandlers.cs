@@ -17,16 +17,23 @@ namespace LionSimPlanner.Scheduling.Infrastructure.Handlers;
 // ─────────────────────────────────────────────────────────────────────────────
 // CreateSessionHandler
 // ─────────────────────────────────────────────────────────────────────────────
-public sealed class CreateSessionHandler(SchedulingDbContext db, ILogger<CreateSessionHandler> logger)
-    : IRequestHandler<CreateSessionCommand, Guid>
+public sealed class CreateSessionHandler(
+    SchedulingDbContext db,
+    ISender mediator,
+    IConfiguration config,
+    ILogger<CreateSessionHandler> logger)
+    : IRequestHandler<CreateSessionCommand, CreateSessionResult>
 {
-    public async Task<Guid> Handle(CreateSessionCommand req, CancellationToken ct)
+    public async Task<CreateSessionResult> Handle(CreateSessionCommand req, CancellationToken ct)
     {
+        if (!Enum.TryParse<SessionType>(req.SessionType, true, out var parsedType))
+            return new CreateSessionResult(false, null, ["Validation Gate Blocked: Invalid session type."]);
+
         var session = new SimulatorSession
         {
             SessionId           = Guid.NewGuid(),
             SimulatorId         = req.SimulatorId,
-            SessionType         = Enum.Parse<SessionType>(req.SessionType, ignoreCase: true),
+            SessionType         = parsedType,
             Status              = SessionStatus.Draft,
             StartTime           = req.StartTime,
             EndTime             = req.EndTime,
@@ -40,10 +47,40 @@ public sealed class CreateSessionHandler(SchedulingDbContext db, ILogger<CreateS
             CreatedAt           = DateTime.UtcNow,
             UpdatedAt           = DateTime.UtcNow
         };
+
+        var queue = await mediator.Send(new GetPriorityQueueQuery(), ct);
+        var captain = queue.FirstOrDefault(p => p.PilotId == session.CaptainId);
+        if (captain is null)
+            return new CreateSessionResult(false, null,
+                ["Validation Gate Blocked: No Captain assigned. Assign a Captain before publishing."]);
+
+        var fo = session.FirstOfficerId.HasValue
+            ? queue.FirstOrDefault(p => p.PilotId == session.FirstOfficerId.Value)
+            : null;
+
+        var instructor = await mediator.Send(new GetInstructorByIdQuery(session.InstructorId ?? Guid.Empty), ct);
+        if (instructor is null)
+            return new CreateSessionResult(false, null,
+                ["Validation Gate Blocked: No Instructor assigned. Assign a qualified Instructor before publishing."]);
+
+        var clearance = await mediator.Send(
+            new GetMaintenanceClearanceQuery(session.SimulatorId, DateOnly.FromDateTime(session.StartTime)), ct);
+
+        var minRest = double.TryParse(config["TrainingSync:MinRestHours"], out var h) ? h : 10.0;
+        var validator = new FtlValidationService(minRest);
+        var ftlResult = validator.Validate(session, captain, fo, instructor, clearance);
+
+        if (!ftlResult.IsValid)
+        {
+            logger.LogWarning("[ValidationGate] Session {Id} CREATE BLOCKED. {Count} violation(s).",
+                session.SessionId, ftlResult.Violations.Count);
+            return new CreateSessionResult(false, null, ftlResult.Violations.AsReadOnly());
+        }
+
         db.Sessions.Add(session);
         await db.SaveChangesAsync(ct);
         logger.LogInformation("[Scheduling] Session {Id} created as DRAFT.", session.SessionId);
-        return session.SessionId;
+        return new CreateSessionResult(true, session.SessionId, []);
     }
 }
 

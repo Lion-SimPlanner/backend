@@ -1,5 +1,6 @@
 using LionSimPlanner.Shared.Hubs;
 using LionSimPlanner.API.Seeding;
+using LionSimPlanner.API.Infrastructure;
 using LionSimPlanner.Asset.Infrastructure;
 using LionSimPlanner.Notifications;
 using LionSimPlanner.Personnel.Infrastructure;
@@ -9,12 +10,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Quartz;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new UtcDateTimeJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new NullableUtcDateTimeJsonConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -167,22 +174,56 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var svc = scope.ServiceProvider;
     var log = svc.GetRequiredService<ILogger<Program>>();
+    var hrDb    = svc.GetRequiredService<PersonnelDbContext>();
+    var schedDb = svc.GetRequiredService<SchedulingDbContext>();
+    var maintDb = svc.GetRequiredService<AssetDbContext>();
+
     try
     {
-        var hrDb    = svc.GetRequiredService<PersonnelDbContext>();
-        var schedDb = svc.GetRequiredService<SchedulingDbContext>();
-        var maintDb = svc.GetRequiredService<AssetDbContext>();
-
         await hrDb.Database.MigrateAsync();
-        await schedDb.Database.MigrateAsync();
-        await maintDb.Database.MigrateAsync();
-        log.LogInformation("All three DbContexts migrated successfully.");
+    }
+    catch (PostgresException ex) when (ex.SqlState == "42P07")
+    {
+        log.LogWarning("Personnel migration skipped because relation already exists.");
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Personnel migration failed on startup.");
+    }
 
+    try
+    {
+        await schedDb.Database.MigrateAsync();
+    }
+    catch (PostgresException ex) when (ex.SqlState == "42P07")
+    {
+        log.LogWarning("Scheduling migration skipped because relation already exists.");
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Scheduling migration failed on startup.");
+    }
+
+    try
+    {
+        await maintDb.Database.MigrateAsync();
+    }
+    catch (PostgresException ex) when (ex.SqlState == "42P07")
+    {
+        log.LogWarning("Asset migration skipped because relation already exists.");
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Asset migration failed on startup.");
+    }
+
+    try
+    {
         await LionSimPlannerSeeder.SeedAsync(hrDb, maintDb, schedDb, log);
     }
     catch (Exception ex)
     {
-        log.LogError(ex, "Database migration or seeding failed on startup.");
+        log.LogError(ex, "Database seeding failed on startup.");
     }
 }
 

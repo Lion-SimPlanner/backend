@@ -21,7 +21,9 @@ public record CreateSessionCommand(
     Guid? EngineerId,
     string SyllabusId,
     string TraineeEmployeeCode)
-    : IRequest<Guid>;
+    : IRequest<CreateSessionResult>;
+
+public record CreateSessionResult(bool Success, Guid? SessionId, IReadOnlyList<string> Violations);
 
 /// <summary>
 /// Triggers the Validation Gate — runs all FTL and qualification checks then

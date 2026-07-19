@@ -162,7 +162,6 @@ c:\Users\user\Documents\Lion SimPlanner\src\LionSimPlanner.API\obj\Debug\net10.0
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\appsettings.json
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.staticwebassets.endpoints.json
-C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.exe
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.deps.json
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.runtimeconfig.json
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.dll
@@ -322,3 +321,5 @@ C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.AP
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\obj\Debug\net10.0\LionSimPlanner.API.pdb
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\obj\Debug\net10.0\LionSimPlanner.API.genruntimeconfig.cache
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\obj\Debug\net10.0\ref\LionSimPlanner.API.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.exe

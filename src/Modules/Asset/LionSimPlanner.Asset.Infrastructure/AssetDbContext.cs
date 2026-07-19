@@ -1,24 +1,44 @@
 using LionSimPlanner.Asset.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LionSimPlanner.Asset.Infrastructure;
 
-/// <summary>
-/// EF Core DbContext for the Asset module.
-/// Maps exclusively to the "maint" PostgreSQL schema.
-/// No cross-schema references — EngineerID in SimulatorSession is a plain Guid, not an EF FK.
-/// </summary>
 public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContext(options)
 {
     public DbSet<Engineer>            Engineers   => Set<Engineer>();
     public DbSet<Simulator>           Simulators  => Set<Simulator>();
     public DbSet<MaintenanceChecklist> Checklists => Set<MaintenanceChecklist>();
 
+    public override int SaveChanges()
+    {
+        NormalizeDateTimes();
+        return base.SaveChanges();
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        NormalizeDateTimes();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        NormalizeDateTimes();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        NormalizeDateTimes();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("maint");
 
-        // ── Engineer ──────────────────────────────────────────────────────────
         modelBuilder.Entity<Engineer>(e =>
         {
             e.ToTable("engineers");
@@ -41,7 +61,6 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
         });
 
-        // ── Simulator ─────────────────────────────────────────────────────────
         modelBuilder.Entity<Simulator>(e =>
         {
             e.ToTable("simulators");
@@ -58,7 +77,6 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
         });
 
-        // ── MaintenanceChecklist ──────────────────────────────────────────────
         modelBuilder.Entity<MaintenanceChecklist>(e =>
         {
             e.ToTable("maintenance_checklists");
@@ -74,11 +92,70 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
             e.Property(x => x.BlockingReason).HasColumnName("blocking_reason").HasColumnType("text");
             e.Property(x => x.CreatedAt).HasColumnName("created_at");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
-
-            // One checklist per simulator per day
             e.HasIndex(x => new { x.SimulatorId, x.ChecklistDate })
                 .IsUnique()
                 .HasDatabaseName("uq_checklist_simulator_date");
         });
+
+        ApplyUtcDateTimeConverters(modelBuilder);
+    }
+
+    private static void ApplyUtcDateTimeConverters(ModelBuilder modelBuilder)
+    {
+        var utcConverter = new ValueConverter<DateTime, DateTime>(
+            v => ToUtc(v),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        var nullableUtcConverter = new ValueConverter<DateTime?, DateTime?>(
+            v => v.HasValue ? ToUtc(v.Value) : v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(utcConverter);
+                }
+                else if (property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(nullableUtcConverter);
+                }
+            }
+        }
+    }
+
+    private void NormalizeDateTimes()
+    {
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.State != EntityState.Added && entry.State != EntityState.Modified)
+            {
+                continue;
+            }
+
+            foreach (var property in entry.Properties)
+            {
+                if (property.Metadata.ClrType == typeof(DateTime) && property.CurrentValue is DateTime dt)
+                {
+                    property.CurrentValue = ToUtc(dt);
+                }
+                else if (property.Metadata.ClrType == typeof(DateTime?) && property.CurrentValue is DateTime nDt)
+                {
+                    property.CurrentValue = ToUtc(nDt);
+                }
+            }
+        }
+    }
+
+    private static DateTime ToUtc(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
     }
 }

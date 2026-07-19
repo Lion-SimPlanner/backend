@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LionSimPlanner.Personnel.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d3022632b5aa5389d8bb4ab22fb6cfa454c7ab1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3aa17f622dac058ff3bbc798f67b805f49ec3ef3")]
 [assembly: System.Reflection.AssemblyProductAttribute("LionSimPlanner.Personnel.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LionSimPlanner.Personnel.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

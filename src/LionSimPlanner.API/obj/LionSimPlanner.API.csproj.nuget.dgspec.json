@@ -424,6 +424,10 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.2, )"
+            },
             "Bogus": {
               "target": "Package",
               "version": "[35.6.1, )"

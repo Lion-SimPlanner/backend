@@ -45,23 +45,29 @@ public class SchedulingController(ISender mediator, SchedulingDbContext db) : Co
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateSession([FromBody] CreateSessionRequest req, CancellationToken ct)
     {
-        var id = await mediator.Send(new CreateSessionCommand(
+        var result = await mediator.Send(new CreateSessionCommand(
             req.SimulatorId, req.SessionType, req.StartTime, req.EndTime,
             req.CaptainId, req.FirstOfficerId, req.InstructorId, req.EngineerId,
             req.SyllabusId, req.TraineeEmployeeCode), ct);
 
+        if (!result.Success || !result.SessionId.HasValue)
+            return BadRequest(new ValidationGateErrorResponse(
+                "Session create blocked by Validation Gate. Resolve all violations and retry.",
+                result.Violations));
+
+        var id = result.SessionId.Value;
         return CreatedAtAction(nameof(GetSession), new { id }, new { sessionId = id, status = "Draft" });
     }
 
     [HttpPut("sessions/{id}/publish")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationGateErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ValidationGateErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PublishSession(Guid id, CancellationToken ct)
     {
         var result = await mediator.Send(new PublishSessionCommand(id), ct);
         if (!result.Success)
-            return UnprocessableEntity(new ValidationGateErrorResponse(
+            return BadRequest(new ValidationGateErrorResponse(
                 "Session publish blocked by Validation Gate. Resolve all violations and retry.",
                 result.Violations));
 

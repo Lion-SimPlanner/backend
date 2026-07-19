@@ -1,23 +1,43 @@
 using LionSimPlanner.Personnel.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LionSimPlanner.Personnel.Infrastructure;
 
-/// <summary>
-/// EF Core DbContext for the Personnel module.
-/// Maps exclusively to the "hr" PostgreSQL schema.
-/// Contains NO references to Scheduling or Asset entities — schema isolation is structural.
-/// </summary>
 public class PersonnelDbContext(DbContextOptions<PersonnelDbContext> options) : DbContext(options)
 {
     public DbSet<Pilot> Pilots => Set<Pilot>();
     public DbSet<Instructor> Instructors => Set<Instructor>();
 
+    public override int SaveChanges()
+    {
+        NormalizeDateTimes();
+        return base.SaveChanges();
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        NormalizeDateTimes();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        NormalizeDateTimes();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        NormalizeDateTimes();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("hr");
 
-        // ── Pilot ────────────────────────────────────────────────────────────
         modelBuilder.Entity<Pilot>(e =>
         {
             e.ToTable("pilots");
@@ -44,7 +64,6 @@ public class PersonnelDbContext(DbContextOptions<PersonnelDbContext> options) : 
             e.Property(p => p.UpdatedAt).HasColumnName("updated_at");
         });
 
-        // ── Instructor ───────────────────────────────────────────────────────
         modelBuilder.Entity<Instructor>(e =>
         {
             e.ToTable("instructors");
@@ -75,5 +94,66 @@ public class PersonnelDbContext(DbContextOptions<PersonnelDbContext> options) : 
             e.Property(i => i.CreatedAt).HasColumnName("created_at");
             e.Property(i => i.UpdatedAt).HasColumnName("updated_at");
         });
+
+        ApplyUtcDateTimeConverters(modelBuilder);
+    }
+
+    private static void ApplyUtcDateTimeConverters(ModelBuilder modelBuilder)
+    {
+        var utcConverter = new ValueConverter<DateTime, DateTime>(
+            v => ToUtc(v),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        var nullableUtcConverter = new ValueConverter<DateTime?, DateTime?>(
+            v => v.HasValue ? ToUtc(v.Value) : v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(utcConverter);
+                }
+                else if (property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(nullableUtcConverter);
+                }
+            }
+        }
+    }
+
+    private void NormalizeDateTimes()
+    {
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.State != EntityState.Added && entry.State != EntityState.Modified)
+            {
+                continue;
+            }
+
+            foreach (var property in entry.Properties)
+            {
+                if (property.Metadata.ClrType == typeof(DateTime) && property.CurrentValue is DateTime dt)
+                {
+                    property.CurrentValue = ToUtc(dt);
+                }
+                else if (property.Metadata.ClrType == typeof(DateTime?) && property.CurrentValue is DateTime nDt)
+                {
+                    property.CurrentValue = ToUtc(nDt);
+                }
+            }
+        }
+    }
+
+    private static DateTime ToUtc(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
     }
 }
