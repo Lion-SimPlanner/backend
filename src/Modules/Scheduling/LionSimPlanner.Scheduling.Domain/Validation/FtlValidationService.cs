@@ -20,7 +20,6 @@ namespace LionSimPlanner.Scheduling.Domain.Validation;
 ///   7.  Instructor type certification
 ///   8.  Instructor syllabus authorization
 ///   9.  Instructor license validity
-///   10. Maintenance clearance (Maintenance Shield check via Asset module)
 /// </summary>
 public sealed class FtlValidationService
 {
@@ -36,8 +35,7 @@ public sealed class FtlValidationService
         SimulatorSession session,
         PilotPriorityDto captain,
         PilotPriorityDto? firstOfficer,
-        InstructorValidationData instructor,
-        MaintenanceClearanceDto maintenanceClearance)
+        InstructorValidationData instructor)
     {
         var result = new FtlValidationResult();
 
@@ -116,14 +114,6 @@ public sealed class FtlValidationService
                 $"Instructor License Expired — {instructor.FullName} ({instructor.EmployeeCode}): " +
                 $"License expired {instructor.LicenseExpiry:yyyy-MM-dd}. " +
                 $"Must be valid on session date {session.StartTime:yyyy-MM-dd}.");
-
-        // ── 10. Maintenance Shield ────────────────────────────────────────────
-        if (!maintenanceClearance.IsCleared)
-            result.AddViolation(
-                $"Maintenance Shield Blocked — Simulator not cleared for operations on " +
-                $"{DateOnly.FromDateTime(session.StartTime):yyyy-MM-dd}. " +
-                $"Reason: {maintenanceClearance.BlockingReason ?? "No maintenance sign-off recorded for this date."}. " +
-                "The Simulator Engineer must complete the daily readiness checklist before this session can be published.");
 
         return result;
     }

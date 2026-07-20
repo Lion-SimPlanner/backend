@@ -80,12 +80,9 @@ public sealed class CreateSessionHandler(
             return new CreateSessionResult(false, null,
                 ["Validation Gate Blocked: No Instructor assigned. Assign a qualified Instructor before publishing."]);
 
-        var clearance = await mediator.Send(
-            new GetMaintenanceClearanceQuery(session.SimulatorId, DateOnly.FromDateTime(session.StartTime)), ct);
-
         var minRest = SchedulingValidationSettings.GetMinRestHours(config);
         var validator = new FtlValidationService(minRest);
-        var ftlResult = validator.Validate(session, captain, fo, instructor, clearance);
+        var ftlResult = validator.Validate(session, captain, fo, instructor);
 
         if (!ftlResult.IsValid)
         {
@@ -138,14 +135,9 @@ public sealed class PublishSessionHandler(
             return new PublishSessionResult(false,
                 ["Validation Gate Blocked: No Instructor assigned. Assign a qualified Instructor before publishing."]);
 
-        // ── Fetch maintenance clearance via MediatR (no Asset project reference) 
-        var clearance = await mediator.Send(
-            new GetMaintenanceClearanceQuery(session.SimulatorId, DateOnly.FromDateTime(session.StartTime)), ct);
-
-        // ── Run FTL Validation ────────────────────────────────────────────────
         var minRest   = SchedulingValidationSettings.GetMinRestHours(config);
         var validator = new FtlValidationService(minRest);
-        var ftlResult = validator.Validate(session, captain, fo, instructor, clearance);
+        var ftlResult = validator.Validate(session, captain, fo, instructor);
 
         if (!ftlResult.IsValid)
         {
@@ -186,15 +178,38 @@ public sealed class CancelSessionHandler(SchedulingDbContext db, ILogger<CancelS
 // ─────────────────────────────────────────────────────────────────────────────
 // StartSessionHandler
 // ─────────────────────────────────────────────────────────────────────────────
-public sealed class StartSessionHandler(SchedulingDbContext db) : IRequestHandler<StartSessionCommand>
+public sealed class StartSessionHandler(
+    SchedulingDbContext db,
+    ISender mediator) : IRequestHandler<StartSessionCommand>
 {
     public async Task Handle(StartSessionCommand req, CancellationToken ct)
     {
         var session = await db.Sessions.FindAsync([req.SessionId], ct)
             ?? throw new InvalidOperationException($"Session {req.SessionId} not found.");
+
         if (session.Status != SessionStatus.Scheduled)
             throw new InvalidOperationException(
                 $"Only SCHEDULED sessions can be started. Current: {session.Status}.");
+
+        var simulatorState = await mediator.Send(
+            new GetSimulatorOperationalStateQuery(session.SimulatorId), ct);
+
+        if (!simulatorState.Exists)
+            throw new InvalidOperationException(
+                "Dispatch Blocked — Simulator record was not found.");
+
+        if (!simulatorState.IsOperationalUp)
+            throw new InvalidOperationException(
+                $"Dispatch Blocked — Simulator is not Up. Current status: {simulatorState.Status}. Resolve maintenance before starting session.");
+
+        var operationDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var clearance = await mediator.Send(
+            new GetMaintenanceClearanceQuery(session.SimulatorId, operationDate), ct);
+
+        if (!clearance.IsCleared)
+            throw new InvalidOperationException(
+                $"Dispatch Blocked — Maintenance Shield not cleared for {operationDate:yyyy-MM-dd}. Reason: {clearance.BlockingReason ?? "No maintenance checklist submitted for this simulator on this date."}");
+
         session.Status    = SessionStatus.InProgress;
         session.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync(ct);
