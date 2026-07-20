@@ -236,3 +236,25 @@ public sealed class GetMaintenanceClearanceHandler(AssetDbContext db)
             checklist.IsCleared ? null : checklist.BlockingReason);
     }
 }
+
+public sealed class GetSimulatorOperationalStateHandler(AssetDbContext db)
+    : IRequestHandler<GetSimulatorOperationalStateQuery, SimulatorOperationalStateDto>
+{
+    public async Task<SimulatorOperationalStateDto> Handle(GetSimulatorOperationalStateQuery req, CancellationToken ct)
+    {
+        var simulator = await db.Simulators.AsNoTracking()
+            .FirstOrDefaultAsync(s => s.SimulatorId == req.SimulatorId, ct);
+
+        if (simulator is null)
+            return new SimulatorOperationalStateDto(req.SimulatorId, false, null, false);
+
+        var status = simulator.Status.ToString();
+        var isOperationalUp = simulator.Status == SimulatorStatus.Ready;
+
+        return new SimulatorOperationalStateDto(
+            req.SimulatorId,
+            true,
+            status,
+            isOperationalUp);
+    }
+}

@@ -3116,11 +3116,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
+      "projectUniqueName": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
       "projectName": "LionSimPlanner.Personnel.Infrastructure",
-      "projectPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
+      "projectPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\LionSimPlanner.Personnel.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\obj\\",
+      "outputPath": "c:\\Users\\user\\Documents\\Lion SimPlanner\\Lion SimPlanner be\\src\\Modules\\Personnel\\LionSimPlanner.Personnel.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"

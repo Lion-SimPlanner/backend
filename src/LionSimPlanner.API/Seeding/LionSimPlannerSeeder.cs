@@ -55,6 +55,7 @@ public static class LionSimPlannerSeeder
         new("d4d4d4d4-0004-0004-0004-000000000001"),
         new("d4d4d4d4-0004-0004-0004-000000000002"),
         new("d4d4d4d4-0004-0004-0004-000000000003"),
+        new("d4d4d4d4-0004-0004-0004-000000000004"),
     ];
 
     public static async Task SeedAsync(
@@ -260,52 +261,83 @@ public static class LionSimPlannerSeeder
             db.Simulators.AddRange(simulators);
         }
 
-        if (!hasEngineers)
+        var desiredEngineers = new[]
         {
-            var engineers = new[]
+            new LionSimPlanner.Asset.Domain.Entities.Engineer
             {
-                new LionSimPlanner.Asset.Domain.Entities.Engineer
-                {
-                    EngineerID = new Guid("d4d4d4d4-0004-0004-0004-000000000001"),
-                    EmployeeCode = "LGA-ENG-001",
-                    FullName = "Eng. Marek Kowalski",
-                    ClearanceLevel = "L3",
-                    HardwareRatings = new List<string> { "B737-800NG", "B737-900ER", "B737 MAX 8" },
-                    ShiftStartTime = now.Date.AddHours(6),
-                    ShiftEndTime = now.Date.AddHours(14),
-                    IsOnCall = false,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-                new LionSimPlanner.Asset.Domain.Entities.Engineer
-                {
-                    EngineerID = new Guid("d4d4d4d4-0004-0004-0004-000000000002"),
-                    EmployeeCode = "LGA-ENG-002",
-                    FullName = "Eng. Felix Adisa",
-                    ClearanceLevel = "L2",
-                    HardwareRatings = new List<string> { "A330-300", "A330-900neo" },
-                    ShiftStartTime = now.Date.AddHours(6),
-                    ShiftEndTime = now.Date.AddHours(14),
-                    IsOnCall = false,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-                new LionSimPlanner.Asset.Domain.Entities.Engineer
-                {
-                    EngineerID = new Guid("d4d4d4d4-0004-0004-0004-000000000003"),
-                    EmployeeCode = "LGA-ENG-003",
-                    FullName = "Eng. Thomas Brennan",
-                    ClearanceLevel = "L3",
-                    HardwareRatings = new List<string> { "A320-200", "A320neo" },
-                    ShiftStartTime = now.Date.AddHours(14),
-                    ShiftEndTime = now.Date.AddHours(22),
-                    IsOnCall = false,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-            };
+                EngineerID = EngineerIds[0],
+                EmployeeCode = "LGA-ENG-001",
+                FullName = "Eng. Marek Kowalski",
+                ClearanceLevel = "L3",
+                // Primary machine: Bay 1 (B737-800NG)
+                HardwareRatings = new List<string> { "B737-800NG" },
+                ShiftStartTime = now.Date.AddHours(6),
+                ShiftEndTime = now.Date.AddHours(14),
+                IsOnCall = false,
+                CreatedAt = now,
+                UpdatedAt = now,
+            },
+            new LionSimPlanner.Asset.Domain.Entities.Engineer
+            {
+                EngineerID = EngineerIds[1],
+                EmployeeCode = "LGA-ENG-002",
+                FullName = "Eng. Felix Adisa",
+                ClearanceLevel = "L2",
+                // Primary machine: Bay 2 (A330-900neo)
+                HardwareRatings = new List<string> { "A330-900neo" },
+                ShiftStartTime = now.Date.AddHours(6),
+                ShiftEndTime = now.Date.AddHours(14),
+                IsOnCall = false,
+                CreatedAt = now,
+                UpdatedAt = now,
+            },
+            new LionSimPlanner.Asset.Domain.Entities.Engineer
+            {
+                EngineerID = EngineerIds[2],
+                EmployeeCode = "LGA-ENG-003",
+                FullName = "Eng. Thomas Brennan",
+                ClearanceLevel = "L3",
+                // Primary machine: Bay 3 (A320neo)
+                HardwareRatings = new List<string> { "A320neo" },
+                ShiftStartTime = now.Date.AddHours(14),
+                ShiftEndTime = now.Date.AddHours(22),
+                IsOnCall = false,
+                CreatedAt = now,
+                UpdatedAt = now,
+            },
+            new LionSimPlanner.Asset.Domain.Entities.Engineer
+            {
+                EngineerID = EngineerIds[3],
+                EmployeeCode = "LGA-ENG-004",
+                FullName = "Eng. Daniel Rahman",
+                ClearanceLevel = "L3",
+                // Primary machine: Bay 4 (B737 MAX 8)
+                HardwareRatings = new List<string> { "B737 MAX 8" },
+                ShiftStartTime = now.Date.AddHours(14),
+                ShiftEndTime = now.Date.AddHours(22),
+                IsOnCall = false,
+                CreatedAt = now,
+                UpdatedAt = now,
+            },
+        };
 
-            db.Engineers.AddRange(engineers);
+        var existingEngineers = await db.Engineers.ToListAsync();
+        foreach (var desired in desiredEngineers)
+        {
+            var existing = existingEngineers.FirstOrDefault(e => e.EmployeeCode == desired.EmployeeCode);
+            if (existing is null)
+            {
+                db.Engineers.Add(desired);
+                continue;
+            }
+
+            existing.FullName = desired.FullName;
+            existing.ClearanceLevel = desired.ClearanceLevel;
+            existing.HardwareRatings = desired.HardwareRatings;
+            existing.ShiftStartTime = desired.ShiftStartTime;
+            existing.ShiftEndTime = desired.ShiftEndTime;
+            existing.IsOnCall = desired.IsOnCall;
+            existing.UpdatedAt = now;
         }
 
         await db.SaveChangesAsync();
