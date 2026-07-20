@@ -1,6 +1,7 @@
 using LionSimPlanner.Shared.Hubs;
 using LionSimPlanner.Asset.Application.Commands;
 using LionSimPlanner.Asset.Domain.Entities;
+using LionSimPlanner.Asset.Domain.Enums;
 using LionSimPlanner.Shared.Dtos;
 using LionSimPlanner.Shared.Events;
 using LionSimPlanner.Shared.Queries;
@@ -11,9 +12,6 @@ using Microsoft.Extensions.Logging;
 
 namespace LionSimPlanner.Asset.Infrastructure.Handlers;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SetSimulatorStatusHandler
-// ─────────────────────────────────────────────────────────────────────────────
 public sealed class SetSimulatorStatusHandler(
     AssetDbContext db,
     IPublisher publisher,
@@ -33,12 +31,46 @@ public sealed class SetSimulatorStatusHandler(
         simulator.LastStatusChangedByEngineerCode = req.EngineerCode;
         simulator.LastStatusChangedAt             = DateTime.UtcNow;
         simulator.UpdatedAt                       = DateTime.UtcNow;
+
+        if (req.NewStatus == SimulatorStatus.Ready)
+        {
+            var openLog = await db.MaintenanceLogs
+                .Where(x => x.SimulatorId == req.SimulatorId && x.ResolvedAt == null)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync(ct);
+
+            if (openLog is not null)
+            {
+                openLog.ResolutionDescription = string.IsNullOrWhiteSpace(req.FaultDescription)
+                    ? "Status set to Ready"
+                    : req.FaultDescription;
+                openLog.ResolvedAt = DateTime.UtcNow;
+                openLog.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        else
+        {
+            db.MaintenanceLogs.Add(new MaintenanceLog
+            {
+                MaintenanceLogId = Guid.NewGuid(),
+                SimulatorId = req.SimulatorId,
+                Severity = req.NewStatus.ToString(),
+                FaultDescription = string.IsNullOrWhiteSpace(req.FaultDescription)
+                    ? $"Simulator marked as {req.NewStatus}"
+                    : req.FaultDescription,
+                ResolutionDescription = null,
+                ResolvedAt = null,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
         await db.SaveChangesAsync(ct);
 
         logger.LogInformation("[Asset] Simulator {Id}: {Prev} → {New} by {Code}.",
-            req.SimulatorId, prev, req.NewStatus, req.EngineerCode);
+            req.SimulatorId, prev.ToString(), req.NewStatus.ToString(), req.EngineerCode);
 
-        if (string.Equals(req.NewStatus, "Down", StringComparison.OrdinalIgnoreCase))
+        if (req.NewStatus == SimulatorStatus.AOG)
         {
             logger.LogWarning("[Asset] Simulator {Id} DOWN — publishing AOG notification.", req.SimulatorId);
             await publisher.Publish(new SimulatorAOGNotification(
@@ -52,7 +84,7 @@ public sealed class SetSimulatorStatusHandler(
             {
                 simulatorId = req.SimulatorId,
                 simulatorName = simulator.Name,
-                status = "Down",
+                status = "AOG",
                 reportedBy = req.EngineerCode,
                 faultDescription = req.FaultDescription,
                 occurredAt = DateTime.UtcNow
@@ -63,9 +95,80 @@ public sealed class SetSimulatorStatusHandler(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SubmitMaintenanceChecklistHandler
-// ─────────────────────────────────────────────────────────────────────────────
+public sealed class ResolveDefectHandler(
+    AssetDbContext db,
+    ILogger<ResolveDefectHandler> logger)
+    : IRequestHandler<ResolveDefectCommand, ResolveDefectResult>
+{
+    public async Task<ResolveDefectResult> Handle(ResolveDefectCommand req, CancellationToken ct)
+    {
+        var simulator = await db.Simulators.FirstOrDefaultAsync(s => s.SimulatorId == req.SimulatorId, ct);
+        if (simulator is null)
+            return new ResolveDefectResult(false, $"Simulator {req.SimulatorId} not found.", null);
+
+        var activeLog = await db.MaintenanceLogs
+            .Where(x => x.SimulatorId == req.SimulatorId && x.ResolvedAt == null)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+
+        var resolvedAt = DateTime.UtcNow;
+
+        if (activeLog is null)
+        {
+            activeLog = new MaintenanceLog
+            {
+                MaintenanceLogId = Guid.NewGuid(),
+                SimulatorId = req.SimulatorId,
+                Severity = SimulatorStatus.Defect.ToString(),
+                FaultDescription = "Auto-created from ResolveDefect action",
+                ResolutionDescription = req.ResolutionDescription,
+                ResolvedAt = resolvedAt,
+                CreatedAt = resolvedAt,
+                UpdatedAt = resolvedAt,
+            };
+            db.MaintenanceLogs.Add(activeLog);
+        }
+        else
+        {
+            activeLog.ResolutionDescription = req.ResolutionDescription;
+            activeLog.ResolvedAt = resolvedAt;
+            activeLog.UpdatedAt = resolvedAt;
+        }
+
+        simulator.Status = SimulatorStatus.Ready;
+        simulator.LastStatusChangedByEngineerId = req.EngineerIdRef;
+        simulator.LastStatusChangedByEngineerCode = req.EngineerCode;
+        simulator.LastStatusChangedAt = resolvedAt;
+        simulator.UpdatedAt = resolvedAt;
+
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation("[Asset] ResolveDefect completed for simulator {Id} by {Code}.", req.SimulatorId, req.EngineerCode);
+        return new ResolveDefectResult(true, null, resolvedAt);
+    }
+}
+
+public sealed class CheckoutEngineerHandler(
+    AssetDbContext db,
+    ILogger<CheckoutEngineerHandler> logger)
+    : IRequestHandler<CheckoutEngineerCommand, CheckoutEngineerResult>
+{
+    public async Task<CheckoutEngineerResult> Handle(CheckoutEngineerCommand req, CancellationToken ct)
+    {
+        var engineer = await db.Engineers.FirstOrDefaultAsync(e => e.EngineerID == req.EngineerId, ct);
+        if (engineer is null)
+            return new CheckoutEngineerResult(false, $"Engineer {req.EngineerId} not found.", null);
+
+        var checkoutAt = DateTime.UtcNow;
+        engineer.CheckoutTime = checkoutAt;
+        engineer.UpdatedAt = checkoutAt;
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation("[Asset] Engineer {Id} checked out at {CheckoutAt}.", req.EngineerId, checkoutAt);
+        return new CheckoutEngineerResult(true, null, checkoutAt);
+    }
+}
+
 public sealed class SubmitMaintenanceChecklistHandler(
     AssetDbContext db,
     ILogger<SubmitMaintenanceChecklistHandler> logger)
@@ -113,9 +216,6 @@ public sealed class SubmitMaintenanceChecklistHandler(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GetMaintenanceClearanceHandler — resolves Scheduling module's query
-// ─────────────────────────────────────────────────────────────────────────────
 public sealed class GetMaintenanceClearanceHandler(AssetDbContext db)
     : IRequestHandler<GetMaintenanceClearanceQuery, MaintenanceClearanceDto>
 {

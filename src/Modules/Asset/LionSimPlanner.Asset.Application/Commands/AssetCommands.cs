@@ -1,19 +1,11 @@
 using MediatR;
+using LionSimPlanner.Asset.Domain.Enums;
 
 namespace LionSimPlanner.Asset.Application.Commands;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// All command/query records for the Asset module.
-// Handlers live in Asset.Infrastructure (avoids circular dependency).
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// <summary>
-/// Changes a simulator's operational status. Triggers SimulatorAOGNotification
-/// via MediatR if new status is "Down".
-/// </summary>
 public record SetSimulatorStatusCommand(
     Guid SimulatorId,
-    string NewStatus,
+    SimulatorStatus NewStatus,
     Guid EngineerIdRef,
     string EngineerCode,
     string FaultDescription)
@@ -21,10 +13,23 @@ public record SetSimulatorStatusCommand(
 
 public record SetSimulatorStatusResult(bool Success, string? ErrorMessage);
 
-/// <summary>
-/// Submits the Engineer's daily readiness checklist (Maintenance Shield sign-off).
-/// IsCleared = true raises the shield, allowing sessions to be published.
-/// </summary>
+public record ResolveDefectCommand(
+    Guid SimulatorId,
+    string ResolutionDescription,
+    Guid EngineerIdRef,
+    string EngineerCode)
+    : IRequest<ResolveDefectResult>;
+
+public record ResolveDefectResult(bool Success, string? ErrorMessage, DateTime? ResolvedAt);
+
+public record CheckoutEngineerCommand(
+    Guid EngineerId,
+    Guid RequestedByEngineerId,
+    string RequestedByEngineerCode)
+    : IRequest<CheckoutEngineerResult>;
+
+public record CheckoutEngineerResult(bool Success, string? ErrorMessage, DateTime? CheckoutTime);
+
 public record SubmitMaintenanceChecklistCommand(
     Guid SimulatorId,
     Guid EngineerIdRef,

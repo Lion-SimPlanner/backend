@@ -13,14 +13,13 @@ public class Engineer
 
     public string FullName { get; set; } = string.Empty;
 
-    /// <summary>Regulatory clearance level. Determines which maintenance activities the engineer can approve.</summary>
     public string ClearanceLevel { get; set; } = string.Empty;
 
-    /// <summary>Simulator types/hardware families the engineer is rated for. JSONB array.</summary>
     public List<string> HardwareRatings { get; set; } = [];
 
     public DateTime ShiftStartTime { get; set; }
     public DateTime ShiftEndTime   { get; set; }
+    public DateTime? CheckoutTime  { get; set; }
 
     public bool IsOnCall { get; set; }
 

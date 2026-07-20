@@ -219,6 +219,39 @@ if (app.Environment.IsDevelopment())
 
     try
     {
+        await maintDb.Database.ExecuteSqlRawAsync(@"
+            ALTER TABLE maint.engineers
+            ADD COLUMN IF NOT EXISTS checkout_time timestamp with time zone;
+
+            CREATE TABLE IF NOT EXISTS maint.maintenance_logs (
+                maintenance_log_id uuid NOT NULL DEFAULT gen_random_uuid(),
+                simulator_id uuid NOT NULL,
+                severity character varying(30) NOT NULL,
+                fault_description text NOT NULL,
+                resolution_description text NULL,
+                resolved_at timestamp with time zone NULL,
+                created_at timestamp with time zone NOT NULL,
+                updated_at timestamp with time zone NOT NULL,
+                CONSTRAINT ""PK_maintenance_logs"" PRIMARY KEY (maintenance_log_id),
+                CONSTRAINT ""FK_maintenance_logs_simulators_simulator_id"" FOREIGN KEY (simulator_id)
+                    REFERENCES maint.simulators(simulator_id)
+                    ON DELETE CASCADE
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_maintenance_logs_simulator_id
+                ON maint.maintenance_logs (simulator_id);
+
+            CREATE INDEX IF NOT EXISTS idx_maintenance_logs_resolved_at
+                ON maint.maintenance_logs (resolved_at);
+        ");
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Asset schema bootstrap failed on startup.");
+    }
+
+    try
+    {
         await LionSimPlannerSeeder.SeedAsync(hrDb, maintDb, schedDb, log);
     }
     catch (Exception ex)

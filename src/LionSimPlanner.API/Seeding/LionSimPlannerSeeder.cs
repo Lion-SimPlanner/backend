@@ -1,4 +1,5 @@
 using LionSimPlanner.Asset.Domain.Entities;
+using LionSimPlanner.Asset.Domain.Enums;
 using LionSimPlanner.Asset.Infrastructure;
 using LionSimPlanner.Personnel.Domain.Entities;
 using LionSimPlanner.Personnel.Domain.Enums;
@@ -80,7 +81,6 @@ public static class LionSimPlannerSeeder
         var hasInstructors = await db.Instructors.AnyAsync();
         if (hasPilots && hasInstructors) return;
 
-        Randomizer.Seed = new Random(12345);
         var faker = new Faker("en");
         var now = DateTime.UtcNow;
         if (!hasPilots)
@@ -93,6 +93,14 @@ public static class LionSimPlannerSeeder
                 var prefix = isCapt ? "Capt." : "F/O";
                 var fn = faker.Name.FirstName();
                 var ln = faker.Name.LastName();
+                var pilotDutyMode = faker.Random.Int(0, 99);
+                var pilotDutyEnd = pilotDutyMode switch
+                {
+                    <= 34 => now.AddHours(-faker.Random.Double(12, 36)),
+                    <= 74 => now.AddHours(-faker.Random.Double(8, 12)),
+                    _ => now.AddHours(-faker.Random.Double(0.25, 7.5)),
+                };
+                var pilotNextDuty = pilotDutyEnd.AddHours(faker.Random.Double(2, 18));
                 pilots.Add(new Pilot
                 {
                     PilotId = PilotIds[i],
@@ -105,8 +113,8 @@ public static class LionSimPlannerSeeder
                     LastTrainingDate = now.AddDays(-30),
                     NextTrainingDue = now.AddDays(90),
                     RequiredSyllabus = "InitialTypeRating",
-                    LastDutyEndTime = now.AddHours(-24),
-                    NextDutyStartTime = now.AddHours(12),
+                    LastDutyEndTime = pilotDutyEnd,
+                    NextDutyStartTime = pilotNextDuty,
                     CreatedAt = now,
                     UpdatedAt = now,
                 });
@@ -117,24 +125,70 @@ public static class LionSimPlannerSeeder
         if (!hasInstructors)
         {
             var instructors = new List<Instructor>();
+            var syllabusCatalog = new[]
+            {
+                "InitialTypeRating",
+                "RecurrentTraining",
+                "LOFT",
+                "CommandUpgrade",
+                "OPC",
+                "LPC",
+                "MCC",
+                "CRM",
+                "Requalification",
+                "Differences"
+            };
+            var usedInstructorLoadouts = new HashSet<string>(StringComparer.Ordinal);
+
             for (var i = 0; i < 3; i++)
             {
                 var fn = faker.Name.FirstName();
                 var ln = faker.Name.LastName();
+                List<string> certifiedTypes;
+                List<string> authorizedSyllabi;
+                string signature;
+
+                do
+                {
+                    var typeCount = faker.Random.Int(2, Math.Min(6, Fleet.Length));
+                    var syllabusCount = faker.Random.Int(2, Math.Min(5, syllabusCatalog.Length));
+
+                    certifiedTypes = faker.Random.Shuffle(Fleet.ToList())
+                        .Take(typeCount)
+                        .OrderBy(x => x, StringComparer.Ordinal)
+                        .ToList();
+
+                    authorizedSyllabi = faker.Random.Shuffle(syllabusCatalog.ToList())
+                        .Take(syllabusCount)
+                        .OrderBy(x => x, StringComparer.Ordinal)
+                        .ToList();
+
+                    signature = string.Join('|', certifiedTypes) + "::" + string.Join('|', authorizedSyllabi);
+                }
+                while (!usedInstructorLoadouts.Add(signature));
+
+                var instructorDutyMode = faker.Random.Int(0, 99);
+                var instructorDutyEnd = instructorDutyMode switch
+                {
+                    <= 29 => now.AddHours(-faker.Random.Double(12, 30)),
+                    <= 69 => now.AddHours(-faker.Random.Double(8, 12)),
+                    _ => now.AddHours(-faker.Random.Double(0.25, 7.0)),
+                };
+                var instructorNextDuty = instructorDutyEnd.AddHours(faker.Random.Double(1.5, 14));
                 instructors.Add(new Instructor
                 {
                     InstructorId = InstructorIds[i],
                     EmployeeCode = $"LGA-INS-{i + 1:000}",
                     FullName = $"Instr. {fn} {ln}",
                     CorporateEmail = $"instructor{i + 1}@lionair.co.id",
-                    RoleLevel = InstructorRoleLevel.TRI,
-                    CertifiedTypes = Fleet.Take(3).ToList(),
-                    AuthorizedSyllabi = new List<string> { "InitialTypeRating", "RecurrentTraining" },
+                    RoleLevel = faker.PickRandom(InstructorRoleLevel.SFI, InstructorRoleLevel.TRI, InstructorRoleLevel.TRE),
+                    CertifiedTypes = certifiedTypes,
+                    AuthorizedSyllabi = authorizedSyllabi,
                     LicenseExpiry = now.AddMonths(24),
-                    LastDutyEndTime = now.AddHours(-12),
-                    NextDutyStartTime = now.AddHours(8),
-                    CurrentMonthlyHours = 10,
-                    MaxMonthlyHours = 100,
+                    LastDutyEndTime = instructorDutyEnd,
+                    NextDutyStartTime = instructorNextDuty,
+                    CurrentMonthlyHours = faker.Random.Int(8, 92),
+                    MaxMonthlyHours = 24,
                     CreatedAt = now,
                     UpdatedAt = now,
                 });
@@ -164,7 +218,7 @@ public static class LionSimPlannerSeeder
                     Name = "Jakarta B737-800NG Full Flight Simulator",
                     BayNumber = "Bay 1",
                     AircraftType = "B737-800NG",
-                    Status = "Ready",
+                    Status = SimulatorStatus.Ready,
                     LastStatusChangedAt = now,
                     CreatedAt = now,
                     UpdatedAt = now,
@@ -175,7 +229,7 @@ public static class LionSimPlannerSeeder
                     Name = "Jakarta A330-900neo Full Flight Simulator",
                     BayNumber = "Bay 2",
                     AircraftType = "A330-900neo",
-                    Status = "Ready",
+                    Status = SimulatorStatus.Ready,
                     LastStatusChangedAt = now,
                     CreatedAt = now,
                     UpdatedAt = now,
@@ -186,7 +240,7 @@ public static class LionSimPlannerSeeder
                     Name = "Jakarta A320neo Full Flight Simulator",
                     BayNumber = "Bay 3",
                     AircraftType = "A320neo",
-                    Status = "Ready",
+                    Status = SimulatorStatus.Ready,
                     LastStatusChangedAt = now,
                     CreatedAt = now,
                     UpdatedAt = now,
@@ -197,7 +251,7 @@ public static class LionSimPlannerSeeder
                     Name = "Jakarta B737 MAX 8 Full Flight Simulator",
                     BayNumber = "Bay 4",
                     AircraftType = "B737 MAX 8",
-                    Status = "Down",
+                    Status = SimulatorStatus.AOG,
                     LastStatusChangedAt = now,
                     CreatedAt = now,
                     UpdatedAt = now,

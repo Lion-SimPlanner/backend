@@ -1,4 +1,5 @@
 using LionSimPlanner.Asset.Application.Commands;
+using LionSimPlanner.Asset.Domain.Enums;
 using LionSimPlanner.Asset.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,7 @@ public class AssetController(ISender mediator, AssetDbContext db) : ControllerBa
                 name            = s.Name,
                 bayNumber       = s.BayNumber,
                 aircraftType    = s.AircraftType,
-                status          = s.Status,
+                status          = s.Status.ToString(),
                 lastChangedAt   = s.LastStatusChangedAt
             })
             .ToListAsync(ct);
@@ -43,6 +44,7 @@ public class AssetController(ISender mediator, AssetDbContext db) : ControllerBa
                 hardwareRatings = e.HardwareRatings,
                 shiftStart      = e.ShiftStartTime,
                 shiftEnd        = e.ShiftEndTime,
+                checkoutTime    = e.CheckoutTime,
                 isOnCall        = e.IsOnCall
             })
             .ToListAsync(ct);
@@ -69,15 +71,106 @@ public class AssetController(ISender mediator, AssetDbContext db) : ControllerBa
         if (!result.Success)
             return NotFound(new { error = result.ErrorMessage });
 
-        var isAog = string.Equals(request.Status, "Down", StringComparison.OrdinalIgnoreCase);
+        var isAog = request.Status == SimulatorStatus.AOG;
         return Ok(new
         {
             simulatorId  = id,
-            newStatus    = request.Status,
+            newStatus    = request.Status.ToString(),
             aogTriggered = isAog,
             message      = isAog
                 ? "AOG declared. Affected sessions are being automatically cancelled and crew notified."
                 : "Simulator status updated."
+        });
+    }
+
+    [HttpPost("simulators/{id}/ResolveDefect")]
+    [Authorize(Roles = "Engineer")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResolveDefect(
+        Guid id,
+        [FromBody] ResolveDefectRequest request,
+        CancellationToken ct)
+    {
+        var engineerIdClaim   = User.FindFirst("sub")?.Value;
+        var engineerCodeClaim = User.FindFirst("employee_code")?.Value ?? "UNKNOWN";
+        var engineerId        = engineerIdClaim is not null ? Guid.Parse(engineerIdClaim) : Guid.Empty;
+
+        var result = await mediator.Send(new ResolveDefectCommand(
+            id,
+            request.ResolutionDetails,
+            engineerId,
+            engineerCodeClaim), ct);
+
+        if (!result.Success)
+            return NotFound(new { error = result.ErrorMessage });
+
+        return Ok(new
+        {
+            simulatorId = id,
+            newStatus = SimulatorStatus.Ready.ToString(),
+            resolvedAt = result.ResolvedAt,
+            verified = true,
+            message = "Defect resolved and simulator returned to Ready state."
+        });
+    }
+
+    [HttpPost("maintenance/ResolveDefect")]
+    [Authorize(Roles = "Engineer")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResolveDefectByBody(
+        [FromBody] ResolveDefectByBodyRequest request,
+        CancellationToken ct)
+    {
+        var engineerIdClaim   = User.FindFirst("sub")?.Value;
+        var engineerCodeClaim = User.FindFirst("employee_code")?.Value ?? "UNKNOWN";
+        var engineerId        = engineerIdClaim is not null ? Guid.Parse(engineerIdClaim) : Guid.Empty;
+
+        var result = await mediator.Send(new ResolveDefectCommand(
+            request.SimulatorId,
+            request.ResolutionDescription,
+            engineerId,
+            engineerCodeClaim), ct);
+
+        if (!result.Success)
+            return NotFound(new { error = result.ErrorMessage });
+
+        return Ok(new
+        {
+            simulatorId = request.SimulatorId,
+            newStatus = SimulatorStatus.Ready.ToString(),
+            resolvedAt = result.ResolvedAt,
+            verified = true,
+            message = "Defect resolved and simulator returned to Ready state."
+        });
+    }
+
+    [HttpPost("engineers/{id}/checkout")]
+    [Authorize(Roles = "Engineer")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CheckoutEngineer(
+        Guid id,
+        CancellationToken ct)
+    {
+        var requestedByEngineerIdClaim = User.FindFirst("sub")?.Value;
+        var requestedByEngineerCode = User.FindFirst("employee_code")?.Value ?? "UNKNOWN";
+        var requestedByEngineerId = requestedByEngineerIdClaim is not null ? Guid.Parse(requestedByEngineerIdClaim) : Guid.Empty;
+
+        var result = await mediator.Send(new CheckoutEngineerCommand(
+            id,
+            requestedByEngineerId,
+            requestedByEngineerCode), ct);
+
+        if (!result.Success)
+            return NotFound(new { error = result.ErrorMessage });
+
+        return Ok(new
+        {
+            engineerId = id,
+            checkoutTime = result.CheckoutTime,
+            verified = true
         });
     }
 
@@ -114,6 +207,8 @@ public class AssetController(ISender mediator, AssetDbContext db) : ControllerBa
     }
 }
 
-public record SetSimulatorStatusRequest(string Status, string? FaultDescription);
+public record SetSimulatorStatusRequest(SimulatorStatus Status, string? FaultDescription);
+public record ResolveDefectRequest(string ResolutionDetails);
+public record ResolveDefectByBodyRequest(Guid SimulatorId, string ResolutionDescription);
 public record SubmitChecklistRequest(
     Guid SimulatorId, DateOnly ChecklistDate, bool IsCleared, string Notes, string? BlockingReason);

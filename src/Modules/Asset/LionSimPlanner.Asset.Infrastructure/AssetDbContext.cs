@@ -1,4 +1,5 @@
 using LionSimPlanner.Asset.Domain.Entities;
+using LionSimPlanner.Asset.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -9,6 +10,7 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
 {
     public DbSet<Engineer>            Engineers   => Set<Engineer>();
     public DbSet<Simulator>           Simulators  => Set<Simulator>();
+    public DbSet<MaintenanceLog>      MaintenanceLogs => Set<MaintenanceLog>();
     public DbSet<MaintenanceChecklist> Checklists => Set<MaintenanceChecklist>();
 
     public override int SaveChanges()
@@ -56,6 +58,7 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
                     v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new());
             e.Property(x => x.ShiftStartTime).HasColumnName("shift_start_time");
             e.Property(x => x.ShiftEndTime).HasColumnName("shift_end_time");
+            e.Property(x => x.CheckoutTime).HasColumnName("checkout_time");
             e.Property(x => x.IsOnCall).HasColumnName("is_on_call").HasDefaultValue(false);
             e.Property(x => x.CreatedAt).HasColumnName("created_at");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
@@ -69,12 +72,32 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
             e.Property(x => x.BayNumber).HasColumnName("bay_number").HasMaxLength(20);
             e.Property(x => x.AircraftType).HasColumnName("aircraft_type").HasMaxLength(50);
-            e.Property(x => x.Status).HasColumnName("status").HasMaxLength(30).HasDefaultValue("Ready");
+            e.Property(x => x.Status).HasColumnName("status").HasConversion<string>().HasMaxLength(30).HasDefaultValue(SimulatorStatus.Ready);
             e.Property(x => x.LastStatusChangedByEngineerId).HasColumnName("last_status_changed_by_engineer_id");
             e.Property(x => x.LastStatusChangedByEngineerCode).HasColumnName("last_status_changed_by_engineer_code").HasMaxLength(50);
             e.Property(x => x.LastStatusChangedAt).HasColumnName("last_status_changed_at");
             e.Property(x => x.CreatedAt).HasColumnName("created_at");
             e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
+        });
+
+        modelBuilder.Entity<MaintenanceLog>(e =>
+        {
+            e.ToTable("maintenance_logs");
+            e.HasKey(x => x.MaintenanceLogId);
+            e.Property(x => x.MaintenanceLogId).HasColumnName("maintenance_log_id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.SimulatorId).HasColumnName("simulator_id").IsRequired();
+            e.Property(x => x.Severity).HasColumnName("severity").HasMaxLength(30).IsRequired();
+            e.Property(x => x.FaultDescription).HasColumnName("fault_description").HasColumnType("text").IsRequired();
+            e.Property(x => x.ResolutionDescription).HasColumnName("resolution_description").HasColumnType("text");
+            e.Property(x => x.ResolvedAt).HasColumnName("resolved_at");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
+            e.HasOne(x => x.Simulator)
+                .WithMany(x => x.MaintenanceLogs)
+                .HasForeignKey(x => x.SimulatorId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => x.SimulatorId).HasDatabaseName("idx_maintenance_logs_simulator_id");
+            e.HasIndex(x => x.ResolvedAt).HasDatabaseName("idx_maintenance_logs_resolved_at");
         });
 
         modelBuilder.Entity<MaintenanceChecklist>(e =>

@@ -11,8 +11,25 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace LionSimPlanner.Scheduling.Infrastructure.Handlers;
+
+internal static class SchedulingValidationSettings
+{
+    public static double GetMinRestHours(IConfiguration config)
+    {
+        var raw = config["TrainingSync:MinRestHours"];
+
+        if (double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            return parsed;
+
+        if (double.TryParse(raw, NumberStyles.Float, CultureInfo.CurrentCulture, out parsed))
+            return parsed;
+
+        return 10.0;
+    }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CreateSessionHandler
@@ -66,7 +83,7 @@ public sealed class CreateSessionHandler(
         var clearance = await mediator.Send(
             new GetMaintenanceClearanceQuery(session.SimulatorId, DateOnly.FromDateTime(session.StartTime)), ct);
 
-        var minRest = double.TryParse(config["TrainingSync:MinRestHours"], out var h) ? h : 10.0;
+        var minRest = SchedulingValidationSettings.GetMinRestHours(config);
         var validator = new FtlValidationService(minRest);
         var ftlResult = validator.Validate(session, captain, fo, instructor, clearance);
 
@@ -126,7 +143,7 @@ public sealed class PublishSessionHandler(
             new GetMaintenanceClearanceQuery(session.SimulatorId, DateOnly.FromDateTime(session.StartTime)), ct);
 
         // ── Run FTL Validation ────────────────────────────────────────────────
-        var minRest   = double.TryParse(config["TrainingSync:MinRestHours"], out var h) ? h : 10.0;
+        var minRest   = SchedulingValidationSettings.GetMinRestHours(config);
         var validator = new FtlValidationService(minRest);
         var ftlResult = validator.Validate(session, captain, fo, instructor, clearance);
 
