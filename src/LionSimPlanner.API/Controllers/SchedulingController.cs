@@ -1,3 +1,4 @@
+using LionSimPlanner.Personnel.Infrastructure;
 using LionSimPlanner.Scheduling.Application.Commands;
 using LionSimPlanner.Scheduling.Infrastructure;
 using MediatR;
@@ -9,34 +10,59 @@ namespace LionSimPlanner.API.Controllers;
 
 [ApiController]
 [Route("api/scheduling")]
-public class SchedulingController(ISender mediator, SchedulingDbContext db) : ControllerBase
+public class SchedulingController(
+    ISender mediator,
+    SchedulingDbContext db,
+    PersonnelDbContext personnelDb) : ControllerBase
 {
     [HttpGet("sessions")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> GetSessions(CancellationToken ct)
     {
-        var sessions = await db.Sessions.AsNoTracking()
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
+
+        var pilots = await personnelDb.Pilots.AsNoTracking().ToDictionaryAsync(p => p.PilotId, p => p.FullName, ct);
+        var instructors = await personnelDb.Instructors.AsNoTracking().ToDictionaryAsync(i => i.InstructorId, i => i.FullName, ct);
+
+        var query = db.Sessions.AsNoTracking().AsQueryable();
+
+        if (string.Equals(roleClaim, "Pilot", StringComparison.OrdinalIgnoreCase) && Guid.TryParse(userIdClaim, out var pilotGuid))
+        {
+            query = query.Where(s => s.CaptainId == pilotGuid || s.FirstOfficerId == pilotGuid);
+        }
+        else if (string.Equals(roleClaim, "Instructor", StringComparison.OrdinalIgnoreCase) && Guid.TryParse(userIdClaim, out var instructorGuid))
+        {
+            query = query.Where(s => s.InstructorId == instructorGuid);
+        }
+
+        var rawSessions = await query
             .OrderBy(s => s.StartTime)
-            .Select(s => new
-            {
-                sessionId           = s.SessionId,
-                simulatorId         = s.SimulatorId,
-                sessionType         = s.SessionType.ToString(),
-                status              = s.Status.ToString(),
-                startTime           = s.StartTime,
-                endTime             = s.EndTime,
-                captainId           = s.CaptainId,
-                firstOfficerId      = s.FirstOfficerId,
-                instructorId        = s.InstructorId,
-                engineerId          = s.EngineerId,
-                syllabusId          = s.SyllabusId,
-                traineeEmployeeCode = s.TraineeEmployeeCode,
-                isGraded            = s.IsGraded,
-                gradeStatus         = s.GradeStatus,
-                instructorNotes     = s.InstructorNotes,
-                cancellationReason  = s.CancellationReason
-            })
             .ToListAsync(ct);
+
+        var sessions = rawSessions.Select(s => new
+        {
+            sessionId           = s.SessionId,
+            simulatorId         = s.SimulatorId,
+            sessionType         = s.SessionType.ToString(),
+            status              = s.Status.ToString(),
+            startTime           = s.StartTime,
+            endTime             = s.EndTime,
+            captainId           = s.CaptainId,
+            captainName         = s.CaptainId.HasValue && pilots.TryGetValue(s.CaptainId.Value, out var cName) ? cName : null,
+            firstOfficerId      = s.FirstOfficerId,
+            firstOfficerName    = s.FirstOfficerId.HasValue && pilots.TryGetValue(s.FirstOfficerId.Value, out var foName) ? foName : null,
+            instructorId        = s.InstructorId,
+            instructorName      = s.InstructorId.HasValue && instructors.TryGetValue(s.InstructorId.Value, out var iName) ? iName : null,
+            engineerId          = s.EngineerId,
+            syllabusId          = s.SyllabusId,
+            traineeEmployeeCode = s.TraineeEmployeeCode,
+            isGraded            = s.IsGraded,
+            gradeStatus         = s.GradeStatus,
+            instructorNotes     = s.InstructorNotes,
+            cancellationReason  = s.CancellationReason
+        });
+
         return Ok(sessions);
     }
 
@@ -133,7 +159,32 @@ public class SchedulingController(ISender mediator, SchedulingDbContext db) : Co
         var session = await db.Sessions.AsNoTracking()
             .FirstOrDefaultAsync(s => s.SessionId == id, ct);
         if (session is null) return NotFound();
-        return Ok(session);
+
+        var pilots = await personnelDb.Pilots.AsNoTracking().ToDictionaryAsync(p => p.PilotId, p => p.FullName, ct);
+        var instructors = await personnelDb.Instructors.AsNoTracking().ToDictionaryAsync(i => i.InstructorId, i => i.FullName, ct);
+
+        return Ok(new
+        {
+            sessionId           = session.SessionId,
+            simulatorId         = session.SimulatorId,
+            sessionType         = session.SessionType.ToString(),
+            status              = session.Status.ToString(),
+            startTime           = session.StartTime,
+            endTime             = session.EndTime,
+            captainId           = session.CaptainId,
+            captainName         = session.CaptainId.HasValue && pilots.TryGetValue(session.CaptainId.Value, out var cName) ? cName : null,
+            firstOfficerId      = session.FirstOfficerId,
+            firstOfficerName    = session.FirstOfficerId.HasValue && pilots.TryGetValue(session.FirstOfficerId.Value, out var foName) ? foName : null,
+            instructorId        = session.InstructorId,
+            instructorName      = session.InstructorId.HasValue && instructors.TryGetValue(session.InstructorId.Value, out var iName) ? iName : null,
+            engineerId          = session.EngineerId,
+            syllabusId          = session.SyllabusId,
+            traineeEmployeeCode = session.TraineeEmployeeCode,
+            isGraded            = session.IsGraded,
+            gradeStatus         = session.GradeStatus,
+            instructorNotes     = session.InstructorNotes,
+            cancellationReason  = session.CancellationReason
+        });
     }
 }
 
