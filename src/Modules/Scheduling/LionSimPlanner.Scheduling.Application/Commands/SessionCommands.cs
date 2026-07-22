@@ -50,9 +50,17 @@ public record StartSessionCommand(Guid SessionId) : IRequest;
 /// </summary>
 public record CompleteGradingCommand(
     Guid SessionId,
-    string GradeStatus,           // "PASSED" | "FAILED"
+    string GradeStatus,
     string InstructorNotes,
     string TraineeEmployeeCode)
     : IRequest<CompleteGradingResult>;
 
 public record CompleteGradingResult(bool Success, string? ErrorMessage);
+
+public record TerminateSessionEarlyCommand(
+    Guid SessionId,
+    DateTime ActualEndTime,
+    string Reason)
+    : IRequest<TerminateSessionEarlyResult>;
+
+public record TerminateSessionEarlyResult(bool Success, string? ErrorMessage);
