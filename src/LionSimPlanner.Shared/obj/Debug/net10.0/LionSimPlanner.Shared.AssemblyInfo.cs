@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LionSimPlanner.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+353ba5cea5a58309e643b9eed0f86aa6871f8a67")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+71ba0fc7a0c36e4b65b7dc1808c07f9a7ab28c75")]
 [assembly: System.Reflection.AssemblyProductAttribute("LionSimPlanner.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LionSimPlanner.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

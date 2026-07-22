@@ -3,29 +3,10 @@ using LionSimPlanner.Shared.Dtos;
 
 namespace LionSimPlanner.Scheduling.Domain.Validation;
 
-/// <summary>
-/// The core compliance gatekeeper for Lion SimPlanner.
-///
-/// Called by PublishSessionHandler (in Scheduling.Infrastructure) before any DRAFT → SCHEDULED
-/// transition. Every rule violation produces a specific, human-readable message.
-/// If ANY check fails the session publish is structurally blocked — not just flagged.
-///
-/// Rules implemented (all configurable via constructor params):
-///   1.  Captain minimum rest (FTL): ≥ MinRestHours between LastDutyEnd and session start
-///   2.  Pilot medical validity — Captain
-///   3.  First Officer minimum rest (FTL)
-///   4.  Pilot medical validity — First Officer
-///   5.  Instructor minimum rest (FTL)
-///   6.  Instructor monthly hours cap
-///   7.  Instructor type certification
-///   8.  Instructor syllabus authorization
-///   9.  Instructor license validity
-/// </summary>
 public sealed class FtlValidationService
 {
     private readonly TimeSpan _minRestPeriod;
 
-    /// <param name="minRestHours">Minimum crew rest between duty periods (default: 10h per FTL).</param>
     public FtlValidationService(double minRestHours = 10.0)
     {
         _minRestPeriod = TimeSpan.FromHours(minRestHours);
@@ -78,7 +59,6 @@ public sealed class FtlValidationService
             }
         }
 
-        // ── 5. Instructor FTL Rest ────────────────────────────────────────────
         var instrRest = session.StartTime - instructor.LastDutyEndTime;
         if (instrRest < _minRestPeriod)
             result.AddViolation(
@@ -87,7 +67,6 @@ public sealed class FtlValidationService
                 $"({instructor.LastDutyEndTime:yyyy-MM-dd HH:mm} UTC). " +
                 $"Minimum required: {_minRestPeriod.TotalHours:F0}h.");
 
-        // ── 6. Instructor Monthly Hours Cap ───────────────────────────────────
         var sessionH       = (int)Math.Ceiling(session.DurationHours);
         var projectedHours = instructor.CurrentMonthlyHours + sessionH;
         if (projectedHours > instructor.MaxMonthlyHours)
@@ -97,22 +76,28 @@ public sealed class FtlValidationService
                 $"exceeds cap of {instructor.MaxMonthlyHours}h. " +
                 $"Remaining capacity: {instructor.MaxMonthlyHours - instructor.CurrentMonthlyHours}h.");
 
-        // ── 7. Instructor Type Certification ──────────────────────────────────
-        var syllabusPrefix = session.SyllabusId.Split('_')[0];
-        if (!instructor.CertifiedTypes.Contains(syllabusPrefix, StringComparer.OrdinalIgnoreCase))
-            result.AddViolation(
-                $"Type Certification Mismatch — Instructor {instructor.FullName} ({instructor.EmployeeCode}): " +
-                $"Not certified on aircraft type '{syllabusPrefix}' (from syllabus '{session.SyllabusId}'). " +
-                $"Holds certifications for: {string.Join(", ", instructor.CertifiedTypes)}.");
+        var isExternalSession = string.Equals(session.SyllabusId, "External", StringComparison.OrdinalIgnoreCase)
+            || skipCaptainRegulatoryChecks
+            || (firstOfficer is not null && skipFirstOfficerRegulatoryChecks)
+            || captain.IsExternalUser
+            || (firstOfficer?.IsExternalUser ?? false);
 
-        // ── 8. Instructor Syllabus Authorization ──────────────────────────────
-        if (!instructor.AuthorizedSyllabi.Contains(session.SyllabusId, StringComparer.OrdinalIgnoreCase))
-            result.AddViolation(
-                $"Syllabus Authorization Missing — Instructor {instructor.FullName} ({instructor.EmployeeCode}): " +
-                $"Not authorized for syllabus '{session.SyllabusId}'. " +
-                $"Authorized syllabi: {string.Join(", ", instructor.AuthorizedSyllabi)}.");
+        if (!isExternalSession)
+        {
+            var syllabusPrefix = session.SyllabusId.Split('_')[0];
+            if (!instructor.CertifiedTypes.Contains(syllabusPrefix, StringComparer.OrdinalIgnoreCase))
+                result.AddViolation(
+                    $"Type Certification Mismatch — Instructor {instructor.FullName} ({instructor.EmployeeCode}): " +
+                    $"Not certified on aircraft type '{syllabusPrefix}' (from syllabus '{session.SyllabusId}'). " +
+                    $"Holds certifications for: {string.Join(", ", instructor.CertifiedTypes)}.");
 
-        // ── 9. Instructor License Validity ────────────────────────────────────
+            if (!instructor.AuthorizedSyllabi.Contains(session.SyllabusId, StringComparer.OrdinalIgnoreCase))
+                result.AddViolation(
+                    $"Syllabus Authorization Missing — Instructor {instructor.FullName} ({instructor.EmployeeCode}): " +
+                    $"Not authorized for syllabus '{session.SyllabusId}'. " +
+                    $"Authorized syllabi: {string.Join(", ", instructor.AuthorizedSyllabi)}.");
+        }
+
         if (instructor.LicenseExpiry < session.StartTime)
             result.AddViolation(
                 $"Instructor License Expired — {instructor.FullName} ({instructor.EmployeeCode}): " +
