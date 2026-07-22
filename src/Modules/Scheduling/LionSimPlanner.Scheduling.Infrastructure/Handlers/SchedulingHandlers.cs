@@ -169,8 +169,7 @@ public sealed class PublishSessionHandler(
 }
 
 public sealed class RescheduleSessionHandler(
-    SchedulingDbContext db,
-    ISender mediator)
+    SchedulingDbContext db)
     : IRequestHandler<RescheduleSessionCommand, RescheduleSessionResult>
 {
     public async Task<RescheduleSessionResult> Handle(RescheduleSessionCommand req, CancellationToken ct)
@@ -195,14 +194,6 @@ public sealed class RescheduleSessionHandler(
 
         if (hasOverlap)
             violations.Add("The selected simulator already has an overlapping session in that time window.");
-
-        var readinessDate = DateOnly.FromDateTime(req.StartTime.ToUniversalTime());
-        var maintenance = await mediator.Send(
-            new GetMaintenanceClearanceQuery(session.SimulatorId, readinessDate),
-            ct);
-
-        if (!maintenance.IsCleared)
-            violations.Add($"Daily readiness check is not cleared for {readinessDate:yyyy-MM-dd}. {maintenance.BlockingReason ?? "No maintenance checklist submitted for this simulator on this date."}");
 
         if (violations.Count > 0)
             return new RescheduleSessionResult(false, violations.AsReadOnly());
