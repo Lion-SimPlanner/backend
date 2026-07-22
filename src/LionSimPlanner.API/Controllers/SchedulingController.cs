@@ -48,6 +48,8 @@ public class SchedulingController(
             status              = s.Status.ToString(),
             startTime           = s.StartTime,
             endTime             = s.EndTime,
+            originalEndTime     = s.OriginalEndTime,
+            terminationReason  = s.TerminationReason,
             captainId           = s.CaptainId,
             captainName         = s.CaptainId.HasValue && pilots.TryGetValue(s.CaptainId.Value, out var cName) ? cName : null,
             firstOfficerId      = s.FirstOfficerId,
@@ -103,6 +105,19 @@ public class SchedulingController(
         return Ok(new { sessionId = id, status = "Scheduled", startTime = req.StartTime, endTime = req.EndTime });
     }
 
+    [HttpPatch("sessions/{id}/terminate-early")]
+    [HttpPatch("/api/sessions/{id}/terminate-early")]
+    [Authorize(Roles = "Admin,Instructor")]
+    public async Task<IActionResult> TerminateSessionEarly(Guid id, [FromBody] TerminateSessionEarlyRequest req, CancellationToken ct)
+    {
+        var result = await mediator.Send(new TerminateSessionEarlyCommand(id, req.ActualEndTime, req.Reason), ct);
+
+        if (!result.Success)
+            return BadRequest(new { message = result.ErrorMessage });
+
+        return await GetSession(id, ct);
+    }
+
     [HttpPut("sessions/{id}/publish")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -120,14 +135,24 @@ public class SchedulingController(
     }
 
     [HttpPut("sessions/{id}/start")]
+    [HttpPatch("sessions/{id}/start")]
+    [HttpPatch("/api/sessions/{id}/start")]
     [Authorize(Roles = "Admin,Instructor")]
     public async Task<IActionResult> StartSession(Guid id, CancellationToken ct)
     {
-        await mediator.Send(new StartSessionCommand(id), ct);
-        return Ok(new { sessionId = id, status = "InProgress" });
+        try
+        {
+            await mediator.Send(new StartSessionCommand(id), ct);
+            return await GetSession(id, ct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("sessions/{id}/grade")]
+    [HttpPost("/api/sessions/{id}/grades")]
     [Authorize(Roles = "Instructor")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status422UnprocessableEntity)]
@@ -171,6 +196,8 @@ public class SchedulingController(
             status              = session.Status.ToString(),
             startTime           = session.StartTime,
             endTime             = session.EndTime,
+            originalEndTime     = session.OriginalEndTime,
+            terminationReason  = session.TerminationReason,
             captainId           = session.CaptainId,
             captainName         = session.CaptainId.HasValue && pilots.TryGetValue(session.CaptainId.Value, out var cName) ? cName : null,
             firstOfficerId      = session.FirstOfficerId,
@@ -194,8 +221,10 @@ public record CreateSessionRequest(
     string SyllabusId, string TraineeEmployeeCode);
 
 public record RescheduleSessionRequest(DateTime StartTime, DateTime EndTime);
+public record TerminateSessionEarlyRequest(DateTime ActualEndTime, string Reason);
 
 public record CompleteGradingRequest(string GradeStatus, string InstructorNotes, string TraineeEmployeeCode);
 public record CancelSessionRequest(string Reason);
 
 public record ValidationGateErrorResponse(string Message, IReadOnlyList<string> Violations);
+

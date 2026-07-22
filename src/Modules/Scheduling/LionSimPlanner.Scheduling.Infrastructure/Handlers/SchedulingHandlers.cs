@@ -371,9 +371,57 @@ public sealed class SimulatorAOGHandler(
             }
             catch (Exception ex)
             {
-                // Email failure must never roll back the cancellations
                 logger.LogError(ex, "[AOG] Email failed for session {Id}.", s.SessionId);
             }
         }
+    }
+}
+
+public sealed class TerminateSessionEarlyHandler(
+    SchedulingDbContext db,
+    IHubContext<SimPlannerHub> hubContext,
+    ILogger<TerminateSessionEarlyHandler> logger)
+    : IRequestHandler<TerminateSessionEarlyCommand, TerminateSessionEarlyResult>
+{
+    public async Task<TerminateSessionEarlyResult> Handle(TerminateSessionEarlyCommand req, CancellationToken ct)
+    {
+        var session = await db.Sessions.FirstOrDefaultAsync(s => s.SessionId == req.SessionId, ct);
+        if (session is null)
+            return new TerminateSessionEarlyResult(false, $"Session {req.SessionId} not found.");
+
+        if (session.Status != SessionStatus.InProgress && session.Status != SessionStatus.Scheduled)
+            return new TerminateSessionEarlyResult(false,
+                $"Only InProgress or Scheduled sessions can be terminated early. Current: '{session.Status}'.");
+
+        if (req.ActualEndTime >= session.EndTime)
+            return new TerminateSessionEarlyResult(false,
+                "ActualEndTime must be earlier than the current scheduled EndTime.");
+
+        if (req.ActualEndTime <= session.StartTime)
+            return new TerminateSessionEarlyResult(false,
+                "ActualEndTime must be later than the session StartTime.");
+
+        session.OriginalEndTime    = session.EndTime;
+        session.EndTime            = req.ActualEndTime;
+        session.TerminationReason  = req.Reason;
+        session.Status             = SessionStatus.TerminatedEarly;
+        session.UpdatedAt          = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation(
+            "[EarlyTermination] Session {Id} terminated early at {ActualEnd}. Reason: {Reason}.",
+            session.SessionId, session.EndTime, session.TerminationReason);
+
+        await hubContext.Clients.All.SendAsync("SessionTerminatedEarly", new
+        {
+            sessionId       = session.SessionId,
+            status          = "TerminatedEarly",
+            actualEndTime   = session.EndTime,
+            originalEndTime = session.OriginalEndTime,
+            reason          = session.TerminationReason
+        }, ct);
+
+        return new TerminateSessionEarlyResult(true, null);
     }
 }

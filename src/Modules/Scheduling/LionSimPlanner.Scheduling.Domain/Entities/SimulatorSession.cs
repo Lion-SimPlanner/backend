@@ -70,6 +70,8 @@ public class SimulatorSession
 
     /// <summary>Reason for cancellation — populated on AOG cascade or Admin manual cancel.</summary>
     public string? CancellationReason { get; set; }
+    public DateTime? OriginalEndTime { get; set; }
+    public string? TerminationReason { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

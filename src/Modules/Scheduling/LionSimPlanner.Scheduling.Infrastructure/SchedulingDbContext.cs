@@ -62,6 +62,8 @@ public class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) 
             e.Property(s => s.GradeStatus).HasColumnName("grade_status").HasMaxLength(20);
             e.Property(s => s.InstructorNotes).HasColumnName("instructor_notes").HasColumnType("text");
             e.Property(s => s.CancellationReason).HasColumnName("cancellation_reason").HasColumnType("text");
+            e.Property(s => s.OriginalEndTime).HasColumnName("original_end_time");
+            e.Property(s => s.TerminationReason).HasColumnName("termination_reason").HasColumnType("text");
             e.Property(s => s.CreatedAt).HasColumnName("created_at");
             e.Property(s => s.UpdatedAt).HasColumnName("updated_at");
 

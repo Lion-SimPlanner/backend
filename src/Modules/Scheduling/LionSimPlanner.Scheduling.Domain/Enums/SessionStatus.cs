@@ -16,5 +16,6 @@ public enum SessionStatus
     Scheduled,
     InProgress,
     Completed,
-    Cancelled
+    Cancelled,
+    TerminatedEarly
 }
