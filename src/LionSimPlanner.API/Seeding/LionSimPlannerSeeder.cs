@@ -64,16 +64,8 @@ public static class LionSimPlannerSeeder
         SchedulingDbContext sched,
         ILogger logger)
     {
-        await EnforceOperationalTablesEmptyAsync(maint, sched, logger);
         await SeedPersonnelAsync(hr, logger);
         await SeedAssetsAsync(maint, logger);
-    }
-
-    private static async Task EnforceOperationalTablesEmptyAsync(AssetDbContext maint, SchedulingDbContext sched, ILogger logger)
-    {
-        await sched.Database.ExecuteSqlRawAsync("DELETE FROM sched.simulator_sessions");
-        await maint.Database.ExecuteSqlRawAsync("DELETE FROM maint.maintenance_checklists");
-        logger.LogInformation("[Seeder] operational tables cleared: sched.simulator_sessions, maint.maintenance_checklists.");
     }
 
     private static async Task SeedPersonnelAsync(PersonnelDbContext db, ILogger logger)

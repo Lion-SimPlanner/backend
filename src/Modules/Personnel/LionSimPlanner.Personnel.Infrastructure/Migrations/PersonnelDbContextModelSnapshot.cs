@@ -93,10 +93,12 @@ namespace LionSimPlanner.Personnel.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("InstructorId");
+                    b.HasKey("InstructorId")
+                        .HasName("pk_instructors");
 
                     b.HasIndex("EmployeeCode")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_instructors_employee_code");
 
                     b.ToTable("instructors", "hr");
                 });
@@ -109,8 +111,17 @@ namespace LionSimPlanner.Personnel.Infrastructure.Migrations
                         .HasColumnName("pilot_id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("CompanyName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("company_name");
+
+                    b.Property<string>("ContactNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("contact_number");
+
                     b.Property<string>("CorporateEmail")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)")
                         .HasColumnName("corporate_email");
@@ -125,11 +136,22 @@ namespace LionSimPlanner.Personnel.Infrastructure.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("employee_code");
 
+                    b.Property<string>("FtlStatus")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("ftl_status");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("full_name");
+
+                    b.Property<bool>("IsExternalUser")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_external_user");
 
                     b.Property<DateTime>("LastDutyEndTime")
                         .HasColumnType("timestamp with time zone")
@@ -158,13 +180,11 @@ namespace LionSimPlanner.Personnel.Infrastructure.Migrations
                         .HasColumnName("rank");
 
                     b.Property<string>("RequiredSyllabus")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("required_syllabus");
 
                     b.Property<string>("TypeRatings")
-                        .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("type_ratings");
 
@@ -172,10 +192,12 @@ namespace LionSimPlanner.Personnel.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("PilotId");
+                    b.HasKey("PilotId")
+                        .HasName("pk_pilots");
 
                     b.HasIndex("EmployeeCode")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_pilots_employee_code");
 
                     b.ToTable("pilots", "hr");
                 });

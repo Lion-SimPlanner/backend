@@ -26,7 +26,7 @@ public sealed class GetPriorityQueueHandler(PersonnelDbContext db)
 
         if (!string.IsNullOrWhiteSpace(request.TypeRatingFilter))
             pilots = pilots
-                .Where(p => p.TypeRatings.Contains(request.TypeRatingFilter))
+                .Where(p => p.TypeRatings is not null && p.TypeRatings.Contains(request.TypeRatingFilter))
                 .ToList();
 
         return pilots
@@ -35,9 +35,10 @@ public sealed class GetPriorityQueueHandler(PersonnelDbContext db)
                 p.EmployeeCode,
                 p.FullName,
                 p.Rank.ToString(),
+                p.IsExternalUser,
                 p.NextTrainingDue,
                 p.RequiredSyllabus,
-                p.TypeRatings,
+                (p.TypeRatings ?? []).AsReadOnly(),
                 p.MedicalExpiry,
                 p.LastDutyEndTime,
                 p.NextDutyStartTime))

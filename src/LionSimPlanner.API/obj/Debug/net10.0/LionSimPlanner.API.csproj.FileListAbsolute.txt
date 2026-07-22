@@ -322,4 +322,5 @@ C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.AP
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\obj\Debug\net10.0\LionSimPlanner.API.genruntimeconfig.cache
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\obj\Debug\net10.0\ref\LionSimPlanner.API.dll
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\EFCore.NamingConventions.dll
 C:\Users\user\Documents\Lion SimPlanner\Lion SimPlanner be\src\LionSimPlanner.API\bin\Debug\net10.0\LionSimPlanner.API.exe

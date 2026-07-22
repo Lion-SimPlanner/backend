@@ -432,6 +432,10 @@
               "target": "Package",
               "version": "[35.6.1, )"
             },
+            "EFCore.NamingConventions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "MediatR": {
               "target": "Package",
               "version": "[12.4.1, )"

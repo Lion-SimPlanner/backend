@@ -82,7 +82,13 @@ public sealed class CreateSessionHandler(
 
         var minRest = SchedulingValidationSettings.GetMinRestHours(config);
         var validator = new FtlValidationService(minRest);
-        var ftlResult = validator.Validate(session, captain, fo, instructor);
+        var ftlResult = validator.Validate(
+            session,
+            captain,
+            fo,
+            instructor,
+            captain.IsExternalUser,
+            fo?.IsExternalUser ?? false);
 
         if (!ftlResult.IsValid)
         {
@@ -137,7 +143,13 @@ public sealed class PublishSessionHandler(
 
         var minRest   = SchedulingValidationSettings.GetMinRestHours(config);
         var validator = new FtlValidationService(minRest);
-        var ftlResult = validator.Validate(session, captain, fo, instructor);
+        var ftlResult = validator.Validate(
+            session,
+            captain,
+            fo,
+            instructor,
+            captain.IsExternalUser,
+            fo?.IsExternalUser ?? false);
 
         if (!ftlResult.IsValid)
         {
@@ -153,6 +165,54 @@ public sealed class PublishSessionHandler(
 
         logger.LogInformation("[ValidationGate] Session {Id} → SCHEDULED.", session.SessionId);
         return new PublishSessionResult(true, []);
+    }
+}
+
+public sealed class RescheduleSessionHandler(
+    SchedulingDbContext db,
+    ISender mediator)
+    : IRequestHandler<RescheduleSessionCommand, RescheduleSessionResult>
+{
+    public async Task<RescheduleSessionResult> Handle(RescheduleSessionCommand req, CancellationToken ct)
+    {
+        var violations = new List<string>();
+
+        if (req.StartTime >= req.EndTime)
+            violations.Add("EndTime must be later than StartTime.");
+
+        var session = await db.Sessions.FirstOrDefaultAsync(s => s.SessionId == req.SessionId, ct);
+        if (session is null)
+            return new RescheduleSessionResult(false, ["Session not found."]);
+
+        if (session.Status != SessionStatus.Scheduled)
+            violations.Add($"Only SCHEDULED sessions can be rescheduled. Current status: {session.Status}.");
+
+        var hasOverlap = await db.Sessions.AsNoTracking()
+            .Where(s => s.SessionId != req.SessionId)
+            .Where(s => s.SimulatorId == session.SimulatorId)
+            .Where(s => s.Status != SessionStatus.Cancelled)
+            .AnyAsync(s => req.StartTime < s.EndTime && req.EndTime > s.StartTime, ct);
+
+        if (hasOverlap)
+            violations.Add("The selected simulator already has an overlapping session in that time window.");
+
+        var readinessDate = DateOnly.FromDateTime(req.StartTime.ToUniversalTime());
+        var maintenance = await mediator.Send(
+            new GetMaintenanceClearanceQuery(session.SimulatorId, readinessDate),
+            ct);
+
+        if (!maintenance.IsCleared)
+            violations.Add($"Daily readiness check is not cleared for {readinessDate:yyyy-MM-dd}. {maintenance.BlockingReason ?? "No maintenance checklist submitted for this simulator on this date."}");
+
+        if (violations.Count > 0)
+            return new RescheduleSessionResult(false, violations.AsReadOnly());
+
+        session.StartTime = req.StartTime;
+        session.EndTime = req.EndTime;
+        session.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync(ct);
+
+        return new RescheduleSessionResult(true, []);
     }
 }
 

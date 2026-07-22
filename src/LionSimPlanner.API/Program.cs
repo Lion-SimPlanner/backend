@@ -8,6 +8,7 @@ using LionSimPlanner.Personnel.Infrastructure.CmsSync;
 using LionSimPlanner.Scheduling.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -108,15 +109,21 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
 
 builder.Services.AddDbContext<PersonnelDbContext>(o =>
     o.UseNpgsql(connectionString,
-        npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "hr")));
+        npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "hr"))
+     .ConfigureWarnings(w => w.Log(RelationalEventId.PendingModelChangesWarning))
+     .UseSnakeCaseNamingConvention());
 
 builder.Services.AddDbContext<SchedulingDbContext>(o =>
     o.UseNpgsql(connectionString,
-        npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "sched")));
+        npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "sched"))
+     .ConfigureWarnings(w => w.Log(RelationalEventId.PendingModelChangesWarning))
+     .UseSnakeCaseNamingConvention());
 
 builder.Services.AddDbContext<AssetDbContext>(o =>
     o.UseNpgsql(connectionString,
-        npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "maint")));
+        npgsql => npgsql.MigrationsHistoryTable("__efmigrations", "maint"))
+     .ConfigureWarnings(w => w.Log(RelationalEventId.PendingModelChangesWarning))
+     .UseSnakeCaseNamingConvention());
 
 builder.Services.AddMediatR(cfg =>
 {
@@ -182,6 +189,17 @@ if (app.Environment.IsDevelopment())
 
     try
     {
+        await EnsureMigrationHistorySnakeCaseAsync(hrDb.Database, "hr");
+        await EnsureMigrationHistorySnakeCaseAsync(schedDb.Database, "sched");
+        await EnsureMigrationHistorySnakeCaseAsync(maintDb.Database, "maint");
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Migration history normalization failed on startup.");
+    }
+
+    try
+    {
         await hrDb.Database.MigrateAsync();
     }
     catch (PostgresException ex) when (ex.SqlState == "42P07")
@@ -208,6 +226,7 @@ if (app.Environment.IsDevelopment())
 
     try
     {
+        await EnsureAssetMigrationHistoryBaselineAsync(maintDb);
         await maintDb.Database.MigrateAsync();
     }
     catch (PostgresException ex) when (ex.SqlState == "42P07")
@@ -234,8 +253,8 @@ if (app.Environment.IsDevelopment())
                 resolved_at timestamp with time zone NULL,
                 created_at timestamp with time zone NOT NULL,
                 updated_at timestamp with time zone NOT NULL,
-                CONSTRAINT ""PK_maintenance_logs"" PRIMARY KEY (maintenance_log_id),
-                CONSTRAINT ""FK_maintenance_logs_simulators_simulator_id"" FOREIGN KEY (simulator_id)
+                CONSTRAINT pk_maintenance_logs PRIMARY KEY (maintenance_log_id),
+                CONSTRAINT fk_maintenance_logs_simulators_simulator_id FOREIGN KEY (simulator_id)
                     REFERENCES maint.simulators(simulator_id)
                     ON DELETE CASCADE
             );
@@ -263,3 +282,85 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
+
+static async Task EnsureMigrationHistorySnakeCaseAsync(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade db, string schema)
+{
+    await db.ExecuteSqlRawAsync($@"
+        CREATE TABLE IF NOT EXISTS {schema}.__efmigrations (
+            migration_id character varying(150) NOT NULL,
+            product_version character varying(32) NOT NULL,
+            CONSTRAINT pk___efmigrations PRIMARY KEY (migration_id)
+        );
+
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_schema = '{schema}'
+                  AND table_name = '__efmigrations'
+                  AND column_name = 'MigrationId'
+            ) AND NOT EXISTS (
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_schema = '{schema}'
+                  AND table_name = '__efmigrations'
+                  AND column_name = 'migration_id'
+            ) THEN
+                ALTER TABLE {schema}.__efmigrations RENAME COLUMN ""MigrationId"" TO migration_id;
+            END IF;
+
+            IF EXISTS (
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_schema = '{schema}'
+                  AND table_name = '__efmigrations'
+                  AND column_name = 'ProductVersion'
+            ) AND NOT EXISTS (
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_schema = '{schema}'
+                  AND table_name = '__efmigrations'
+                  AND column_name = 'product_version'
+            ) THEN
+                ALTER TABLE {schema}.__efmigrations RENAME COLUMN ""ProductVersion"" TO product_version;
+            END IF;
+        END$$;
+    ");
+}
+
+static async Task EnsureAssetMigrationHistoryBaselineAsync(AssetDbContext db)
+{
+    await db.Database.ExecuteSqlRawAsync(@"
+        CREATE TABLE IF NOT EXISTS maint.__efmigrations (
+            migration_id character varying(150) NOT NULL,
+            product_version character varying(32) NOT NULL,
+            CONSTRAINT pk___efmigrations PRIMARY KEY (migration_id)
+        );
+
+        INSERT INTO maint.__efmigrations (migration_id, product_version)
+        SELECT '20260714102801_InitialCreate', '9.0.4'
+        WHERE EXISTS (
+            SELECT 1
+            FROM information_schema.tables
+            WHERE table_schema = 'maint' AND table_name = 'engineers'
+        )
+        ON CONFLICT (migration_id) DO NOTHING;
+
+        INSERT INTO maint.__efmigrations (migration_id, product_version)
+        SELECT '20260719164844_AddMaintenanceLifecycleEntities', '9.0.4'
+        WHERE EXISTS (
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema = 'maint'
+              AND table_name = 'engineers'
+              AND column_name = 'checkout_time'
+        )
+          AND EXISTS (
+            SELECT 1
+            FROM information_schema.tables
+            WHERE table_schema = 'maint' AND table_name = 'maintenance_logs'
+        )
+        ON CONFLICT (migration_id) DO NOTHING;
+    ");
+}
