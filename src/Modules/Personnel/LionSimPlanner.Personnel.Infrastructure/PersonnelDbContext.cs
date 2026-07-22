@@ -47,13 +47,19 @@ public class PersonnelDbContext(DbContextOptions<PersonnelDbContext> options) : 
             e.HasIndex(p => p.EmployeeCode).IsUnique();
             e.Property(p => p.FullName).HasColumnName("full_name").HasMaxLength(200).IsRequired();
             e.Property(p => p.CorporateEmail).HasColumnName("corporate_email").HasMaxLength(300);
+            e.Property(p => p.CompanyName).HasColumnName("company_name").HasMaxLength(200);
+            e.Property(p => p.ContactNumber).HasColumnName("contact_number").HasMaxLength(50);
+            e.Property(p => p.IsExternalUser).HasColumnName("is_external_user").HasDefaultValue(false).IsRequired();
+            e.Property(p => p.FtlStatus).HasColumnName("ftl_status").HasMaxLength(100);
             e.Property(p => p.Rank).HasColumnName("rank").HasConversion<string>().HasMaxLength(30);
             e.Property(p => p.TypeRatings)
                 .HasColumnName("type_ratings")
                 .HasColumnType("jsonb")
                 .HasConversion(
-                    v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions?)null),
-                    v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new());
+                    v => v == null ? null : System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions?)null),
+                    v => string.IsNullOrWhiteSpace(v)
+                        ? null
+                        : System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null));
             e.Property(p => p.MedicalExpiry).HasColumnName("medical_expiry");
             e.Property(p => p.LastTrainingDate).HasColumnName("last_training_date");
             e.Property(p => p.NextTrainingDue).HasColumnName("next_training_due");

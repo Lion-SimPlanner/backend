@@ -41,6 +41,7 @@ public class SchedulingController(ISender mediator, SchedulingDbContext db) : Co
     }
 
     [HttpPost("sessions")]
+    [HttpPost("/api/sessions")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateSession([FromBody] CreateSessionRequest req, CancellationToken ct)
@@ -57,6 +58,23 @@ public class SchedulingController(ISender mediator, SchedulingDbContext db) : Co
 
         var id = result.SessionId.Value;
         return CreatedAtAction(nameof(GetSession), new { id }, new { sessionId = id, status = "Draft" });
+    }
+
+    [HttpPut("sessions/{id}")]
+    [HttpPut("/api/sessions/{id}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationGateErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RescheduleSession(Guid id, [FromBody] RescheduleSessionRequest req, CancellationToken ct)
+    {
+        var result = await mediator.Send(new RescheduleSessionCommand(id, req.StartTime, req.EndTime), ct);
+
+        if (!result.Success)
+            return BadRequest(new ValidationGateErrorResponse(
+                "Session reschedule blocked by validation checks.",
+                result.Violations));
+
+        return Ok(new { sessionId = id, status = "Scheduled", startTime = req.StartTime, endTime = req.EndTime });
     }
 
     [HttpPut("sessions/{id}/publish")]
@@ -123,6 +141,8 @@ public record CreateSessionRequest(
     Guid SimulatorId, string SessionType, DateTime StartTime, DateTime EndTime,
     Guid? CaptainId, Guid? FirstOfficerId, Guid? InstructorId, Guid? EngineerId,
     string SyllabusId, string TraineeEmployeeCode);
+
+public record RescheduleSessionRequest(DateTime StartTime, DateTime EndTime);
 
 public record CompleteGradingRequest(string GradeStatus, string InstructorNotes, string TraineeEmployeeCode);
 public record CancelSessionRequest(string Reason);

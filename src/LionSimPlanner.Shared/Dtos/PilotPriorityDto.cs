@@ -8,9 +8,10 @@ public record PilotPriorityDto(
     Guid PilotId,
     string EmployeeCode,
     string FullName,
-    string Rank,                        // "Captain" | "FirstOfficer"
+    string Rank,
+    bool IsExternalUser,
     DateTime NextTrainingDue,
-    string RequiredSyllabus,
+    string? RequiredSyllabus,
     IReadOnlyList<string> TypeRatings,
     DateTime MedicalExpiry,
     DateTime LastDutyEndTime,

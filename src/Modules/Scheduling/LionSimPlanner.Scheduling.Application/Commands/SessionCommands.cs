@@ -33,6 +33,11 @@ public record PublishSessionCommand(Guid SessionId) : IRequest<PublishSessionRes
 
 public record PublishSessionResult(bool Success, IReadOnlyList<string> Violations);
 
+public record RescheduleSessionCommand(Guid SessionId, DateTime StartTime, DateTime EndTime)
+    : IRequest<RescheduleSessionResult>;
+
+public record RescheduleSessionResult(bool Success, IReadOnlyList<string> Violations);
+
 /// <summary>Admin manually cancels a session.</summary>
 public record CancelSessionCommand(Guid SessionId, string Reason) : IRequest;
 

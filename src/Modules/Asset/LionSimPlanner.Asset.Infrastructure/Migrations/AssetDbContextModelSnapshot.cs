@@ -80,10 +80,12 @@ namespace LionSimPlanner.Asset.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("EngineerID");
+                    b.HasKey("EngineerID")
+                        .HasName("pk_engineers");
 
                     b.HasIndex("EmployeeCode")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_engineers_employee_code");
 
                     b.ToTable("engineers", "maint");
                 });
@@ -141,7 +143,8 @@ namespace LionSimPlanner.Asset.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("ChecklistId");
+                    b.HasKey("ChecklistId")
+                        .HasName("pk_maintenance_checklists");
 
                     b.HasIndex("SimulatorId", "ChecklistDate")
                         .IsUnique()
@@ -189,7 +192,8 @@ namespace LionSimPlanner.Asset.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("MaintenanceLogId");
+                    b.HasKey("MaintenanceLogId")
+                        .HasName("pk_maintenance_logs");
 
                     b.HasIndex("ResolvedAt")
                         .HasDatabaseName("idx_maintenance_logs_resolved_at");
@@ -255,7 +259,8 @@ namespace LionSimPlanner.Asset.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("SimulatorId");
+                    b.HasKey("SimulatorId")
+                        .HasName("pk_simulators");
 
                     b.ToTable("simulators", "maint");
                 });
@@ -266,7 +271,8 @@ namespace LionSimPlanner.Asset.Infrastructure.Migrations
                         .WithMany("MaintenanceLogs")
                         .HasForeignKey("SimulatorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_maintenance_logs_simulators_simulator_id");
 
                     b.Navigation("Simulator");
                 });

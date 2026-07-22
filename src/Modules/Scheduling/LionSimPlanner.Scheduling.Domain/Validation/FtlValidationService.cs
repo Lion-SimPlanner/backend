@@ -35,43 +35,47 @@ public sealed class FtlValidationService
         SimulatorSession session,
         PilotPriorityDto captain,
         PilotPriorityDto? firstOfficer,
-        InstructorValidationData instructor)
+        InstructorValidationData instructor,
+        bool skipCaptainRegulatoryChecks,
+        bool skipFirstOfficerRegulatoryChecks)
     {
         var result = new FtlValidationResult();
 
-        // ── 1. Captain FTL Rest ───────────────────────────────────────────────
-        var captainRest = session.StartTime - captain.LastDutyEndTime;
-        if (captainRest < _minRestPeriod)
-            result.AddViolation(
-                $"FTL Rest Violation — Captain {captain.FullName} ({captain.EmployeeCode}): " +
-                $"Only {captainRest.TotalHours:F1}h rest since last duty end " +
-                $"({captain.LastDutyEndTime:yyyy-MM-dd HH:mm} UTC). " +
-                $"Minimum required: {_minRestPeriod.TotalHours:F0}h. " +
-                $"Earliest eligible start: {captain.LastDutyEndTime.Add(_minRestPeriod):yyyy-MM-dd HH:mm} UTC.");
+        if (!skipCaptainRegulatoryChecks)
+        {
+            var captainRest = session.StartTime - captain.LastDutyEndTime;
+            if (captainRest < _minRestPeriod)
+                result.AddViolation(
+                    $"FTL Rest Violation — Captain {captain.FullName} ({captain.EmployeeCode}): " +
+                    $"Only {captainRest.TotalHours:F1}h rest since last duty end " +
+                    $"({captain.LastDutyEndTime:yyyy-MM-dd HH:mm} UTC). " +
+                    $"Minimum required: {_minRestPeriod.TotalHours:F0}h. " +
+                    $"Earliest eligible start: {captain.LastDutyEndTime.Add(_minRestPeriod):yyyy-MM-dd HH:mm} UTC.");
 
-        // ── 2. Captain Medical Validity ───────────────────────────────────────
-        if (captain.MedicalExpiry < session.StartTime)
-            result.AddViolation(
-                $"Medical Certificate Expired — Captain {captain.FullName} ({captain.EmployeeCode}): " +
-                $"Medical expired {captain.MedicalExpiry:yyyy-MM-dd}. Renewal required before assignment.");
+            if (captain.MedicalExpiry < session.StartTime)
+                result.AddViolation(
+                    $"Medical Certificate Expired — Captain {captain.FullName} ({captain.EmployeeCode}): " +
+                    $"Medical expired {captain.MedicalExpiry:yyyy-MM-dd}. Renewal required before assignment.");
+        }
 
-        // ── 3. First Officer FTL Rest ─────────────────────────────────────────
         if (firstOfficer is not null)
         {
-            var foRest = session.StartTime - firstOfficer.LastDutyEndTime;
-            if (foRest < _minRestPeriod)
-                result.AddViolation(
-                    $"FTL Rest Violation — First Officer {firstOfficer.FullName} ({firstOfficer.EmployeeCode}): " +
-                    $"Only {foRest.TotalHours:F1}h rest since last duty end " +
-                    $"({firstOfficer.LastDutyEndTime:yyyy-MM-dd HH:mm} UTC). " +
-                    $"Minimum required: {_minRestPeriod.TotalHours:F0}h. " +
-                    $"Earliest eligible start: {firstOfficer.LastDutyEndTime.Add(_minRestPeriod):yyyy-MM-dd HH:mm} UTC.");
+            if (!skipFirstOfficerRegulatoryChecks)
+            {
+                var foRest = session.StartTime - firstOfficer.LastDutyEndTime;
+                if (foRest < _minRestPeriod)
+                    result.AddViolation(
+                        $"FTL Rest Violation — First Officer {firstOfficer.FullName} ({firstOfficer.EmployeeCode}): " +
+                        $"Only {foRest.TotalHours:F1}h rest since last duty end " +
+                        $"({firstOfficer.LastDutyEndTime:yyyy-MM-dd HH:mm} UTC). " +
+                        $"Minimum required: {_minRestPeriod.TotalHours:F0}h. " +
+                        $"Earliest eligible start: {firstOfficer.LastDutyEndTime.Add(_minRestPeriod):yyyy-MM-dd HH:mm} UTC.");
 
-            // ── 4. FO Medical Validity ────────────────────────────────────────
-            if (firstOfficer.MedicalExpiry < session.StartTime)
-                result.AddViolation(
-                    $"Medical Certificate Expired — First Officer {firstOfficer.FullName} " +
-                    $"({firstOfficer.EmployeeCode}): Medical expired {firstOfficer.MedicalExpiry:yyyy-MM-dd}.");
+                if (firstOfficer.MedicalExpiry < session.StartTime)
+                    result.AddViolation(
+                        $"Medical Certificate Expired — First Officer {firstOfficer.FullName} " +
+                        $"({firstOfficer.EmployeeCode}): Medical expired {firstOfficer.MedicalExpiry:yyyy-MM-dd}.");
+            }
         }
 
         // ── 5. Instructor FTL Rest ────────────────────────────────────────────

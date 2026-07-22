@@ -111,7 +111,8 @@ namespace LionSimPlanner.Scheduling.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("SessionId");
+                    b.HasKey("SessionId")
+                        .HasName("pk_simulator_sessions");
 
                     b.HasIndex("SimulatorId")
                         .HasDatabaseName("idx_sessions_simulator_id");
