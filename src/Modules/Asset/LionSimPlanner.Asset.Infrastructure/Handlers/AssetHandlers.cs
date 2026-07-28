@@ -258,3 +258,112 @@ public sealed class GetSimulatorOperationalStateHandler(AssetDbContext db)
             isOperationalUp);
     }
 }
+
+public sealed class SubmitDefectReportHandler(
+    AssetDbContext db,
+    ISender mediator,
+    IHubContext<SimPlannerHub> hubContext,
+    ILogger<SubmitDefectReportHandler> logger)
+    : IRequestHandler<SubmitDefectReportCommand, SubmitDefectReportResult>
+{
+    public async Task<SubmitDefectReportResult> Handle(SubmitDefectReportCommand req, CancellationToken ct)
+    {
+        var simulator = await db.Simulators.FirstOrDefaultAsync(s => s.SimulatorId == req.SimulatorId, ct);
+        if (simulator is null)
+            return new SubmitDefectReportResult(false, null, $"Simulator {req.SimulatorId} not found.");
+
+        var defect = new SimulatorDefect
+        {
+            DefectId        = Guid.NewGuid(),
+            SimulatorId     = req.SimulatorId,
+            SessionId       = req.SessionId,
+            ReportedBy      = req.ReportedBy,
+            SystemAffected  = req.SystemAffected,
+            Severity        = req.Severity,
+            InstructorNotes = req.InstructorNotes,
+            Status          = "Open",
+            ReportedAt      = DateTime.UtcNow,
+            CreatedAt       = DateTime.UtcNow,
+            UpdatedAt       = DateTime.UtcNow,
+        };
+
+        db.Defects.Add(defect);
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation("[Asset] DefectReport {Id} ({Severity}) filed for Simulator {SimId} by {Reporter}.",
+            defect.DefectId, req.Severity, req.SimulatorId, req.ReportedBy);
+
+        if (string.Equals(req.Severity, "AOG", StringComparison.OrdinalIgnoreCase))
+        {
+            await mediator.Send(new SetSimulatorStatusCommand(
+                req.SimulatorId,
+                SimulatorStatus.AOG,
+                Guid.Empty,
+                req.ReportedBy,
+                $"[AOG] [{req.SystemAffected}] {req.InstructorNotes}"), ct);
+
+            logger.LogWarning("[Asset] AOG defect — Simulator {SimId} locked.", req.SimulatorId);
+        }
+
+        await hubContext.Clients.All.SendAsync("DefectReported", new
+        {
+            defectId        = defect.DefectId,
+            simulatorId     = defect.SimulatorId,
+            sessionId       = defect.SessionId,
+            reportedBy      = defect.ReportedBy,
+            systemAffected  = defect.SystemAffected,
+            severity        = defect.Severity,
+            instructorNotes = defect.InstructorNotes,
+            status          = defect.Status,
+            reportedAt      = defect.ReportedAt,
+        }, ct);
+
+        return new SubmitDefectReportResult(true, defect.DefectId, null);
+    }
+}
+
+public sealed class ResolveDefectReportHandler(
+    AssetDbContext db,
+    ISender mediator,
+    IHubContext<SimPlannerHub> hubContext,
+    ILogger<ResolveDefectReportHandler> logger)
+    : IRequestHandler<ResolveDefectReportCommand, ResolveDefectReportResult>
+{
+    public async Task<ResolveDefectReportResult> Handle(ResolveDefectReportCommand req, CancellationToken ct)
+    {
+        var defect = await db.Defects.FirstOrDefaultAsync(d => d.DefectId == req.DefectId, ct);
+        if (defect is null)
+            return new ResolveDefectReportResult(false, $"Defect {req.DefectId} not found.", null);
+
+        defect.Status                 = "Resolved";
+        defect.ResolutionNotes        = req.ResolutionNotes;
+        defect.ResolvedByEngineerId   = req.EngineerIdRef;
+        defect.ResolvedByEngineerCode = req.EngineerCode;
+        defect.ResolvedAt             = DateTime.UtcNow;
+        defect.UpdatedAt              = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(ct);
+
+        logger.LogInformation("[Asset] DefectReport {Id} resolved by {Code}.", req.DefectId, req.EngineerCode);
+
+        if (string.Equals(defect.Severity, "AOG", StringComparison.OrdinalIgnoreCase))
+        {
+            await mediator.Send(new ResolveDefectCommand(
+                defect.SimulatorId,
+                req.ResolutionNotes,
+                req.EngineerIdRef,
+                req.EngineerCode), ct);
+
+            logger.LogInformation("[Asset] AOG lifted for Simulator {SimId}.", defect.SimulatorId);
+        }
+
+        await hubContext.Clients.All.SendAsync("DefectResolved", new
+        {
+            defectId    = defect.DefectId,
+            simulatorId = defect.SimulatorId,
+            resolvedAt  = defect.ResolvedAt,
+        }, ct);
+
+        return new ResolveDefectReportResult(true, null, defect.ResolvedAt);
+    }
+}

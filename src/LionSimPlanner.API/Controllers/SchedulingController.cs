@@ -40,29 +40,39 @@ public class SchedulingController(
             .OrderBy(s => s.StartTime)
             .ToListAsync(ct);
 
-        var sessions = rawSessions.Select(s => new
+        var sessions = rawSessions.Select(s =>
         {
-            sessionId           = s.SessionId,
-            simulatorId         = s.SimulatorId,
-            sessionType         = s.SessionType.ToString(),
-            status              = s.Status.ToString(),
-            startTime           = s.StartTime,
-            endTime             = s.EndTime,
-            originalEndTime     = s.OriginalEndTime,
-            terminationReason  = s.TerminationReason,
-            captainId           = s.CaptainId,
-            captainName         = s.CaptainId.HasValue && pilots.TryGetValue(s.CaptainId.Value, out var cName) ? cName : null,
-            firstOfficerId      = s.FirstOfficerId,
-            firstOfficerName    = s.FirstOfficerId.HasValue && pilots.TryGetValue(s.FirstOfficerId.Value, out var foName) ? foName : null,
-            instructorId        = s.InstructorId,
-            instructorName      = s.InstructorId.HasValue && instructors.TryGetValue(s.InstructorId.Value, out var iName) ? iName : null,
-            engineerId          = s.EngineerId,
-            syllabusId          = s.SyllabusId,
-            traineeEmployeeCode = s.TraineeEmployeeCode,
-            isGraded            = s.IsGraded,
-            gradeStatus         = s.GradeStatus,
-            instructorNotes     = s.InstructorNotes,
-            cancellationReason  = s.CancellationReason
+            var cName = s.CaptainId.HasValue && pilots.TryGetValue(s.CaptainId.Value, out var cn) ? cn : null;
+            var foName = s.FirstOfficerId.HasValue && pilots.TryGetValue(s.FirstOfficerId.Value, out var fn) ? fn : null;
+            var tName = cName ?? foName;
+            var tRole = cName != null ? "Captain" : (foName != null ? "First Officer" : null);
+
+            return new
+            {
+                sessionId           = s.SessionId,
+                simulatorId         = s.SimulatorId,
+                sessionType         = s.SessionType.ToString(),
+                status              = s.Status.ToString(),
+                startTime           = s.StartTime,
+                endTime             = s.EndTime,
+                originalEndTime     = s.OriginalEndTime,
+                terminationReason  = s.TerminationReason,
+                captainId           = s.CaptainId,
+                captainName         = cName,
+                firstOfficerId      = s.FirstOfficerId,
+                firstOfficerName    = foName,
+                traineeName         = tName,
+                traineeRole         = tRole,
+                instructorId        = s.InstructorId,
+                instructorName      = s.InstructorId.HasValue && instructors.TryGetValue(s.InstructorId.Value, out var iName) ? iName : null,
+                engineerId          = s.EngineerId,
+                syllabusId          = s.SyllabusId,
+                traineeEmployeeCode = s.TraineeEmployeeCode,
+                isGraded            = s.IsGraded,
+                gradeStatus         = s.GradeStatus,
+                instructorNotes     = s.InstructorNotes,
+                cancellationReason  = s.CancellationReason
+            };
         });
 
         return Ok(sessions);
@@ -74,9 +84,10 @@ public class SchedulingController(
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateSession([FromBody] CreateSessionRequest req, CancellationToken ct)
     {
+        var captainId = req.CaptainId ?? req.TraineeId;
         var result = await mediator.Send(new CreateSessionCommand(
             req.SimulatorId, req.SessionType, req.StartTime, req.EndTime,
-            req.CaptainId, req.FirstOfficerId, req.InstructorId, req.EngineerId,
+            captainId, req.FirstOfficerId, req.InstructorId, req.EngineerId,
             req.SyllabusId, req.TraineeEmployeeCode), ct);
 
         if (!result.Success || !result.SessionId.HasValue)
@@ -188,6 +199,11 @@ public class SchedulingController(
         var pilots = await personnelDb.Pilots.AsNoTracking().ToDictionaryAsync(p => p.PilotId, p => p.FullName, ct);
         var instructors = await personnelDb.Instructors.AsNoTracking().ToDictionaryAsync(i => i.InstructorId, i => i.FullName, ct);
 
+        var cName = session.CaptainId.HasValue && pilots.TryGetValue(session.CaptainId.Value, out var cn) ? cn : null;
+        var foName = session.FirstOfficerId.HasValue && pilots.TryGetValue(session.FirstOfficerId.Value, out var fn) ? fn : null;
+        var tName = cName ?? foName;
+        var tRole = cName != null ? "Captain" : (foName != null ? "First Officer" : null);
+
         return Ok(new
         {
             sessionId           = session.SessionId,
@@ -199,9 +215,11 @@ public class SchedulingController(
             originalEndTime     = session.OriginalEndTime,
             terminationReason  = session.TerminationReason,
             captainId           = session.CaptainId,
-            captainName         = session.CaptainId.HasValue && pilots.TryGetValue(session.CaptainId.Value, out var cName) ? cName : null,
+            captainName         = cName,
             firstOfficerId      = session.FirstOfficerId,
-            firstOfficerName    = session.FirstOfficerId.HasValue && pilots.TryGetValue(session.FirstOfficerId.Value, out var foName) ? foName : null,
+            firstOfficerName    = foName,
+            traineeName         = tName,
+            traineeRole         = tRole,
             instructorId        = session.InstructorId,
             instructorName      = session.InstructorId.HasValue && instructors.TryGetValue(session.InstructorId.Value, out var iName) ? iName : null,
             engineerId          = session.EngineerId,
@@ -218,7 +236,7 @@ public class SchedulingController(
 public record CreateSessionRequest(
     Guid SimulatorId, string SessionType, DateTime StartTime, DateTime EndTime,
     Guid? CaptainId, Guid? FirstOfficerId, Guid? InstructorId, Guid? EngineerId,
-    string SyllabusId, string TraineeEmployeeCode);
+    string SyllabusId, string TraineeEmployeeCode, Guid? TraineeId = null, string? TraineeRole = null);
 
 public record RescheduleSessionRequest(DateTime StartTime, DateTime EndTime);
 public record TerminateSessionEarlyRequest(DateTime ActualEndTime, string Reason);

@@ -8,10 +8,11 @@ namespace LionSimPlanner.Asset.Infrastructure;
 
 public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContext(options)
 {
-    public DbSet<Engineer>            Engineers   => Set<Engineer>();
-    public DbSet<Simulator>           Simulators  => Set<Simulator>();
-    public DbSet<MaintenanceLog>      MaintenanceLogs => Set<MaintenanceLog>();
-    public DbSet<MaintenanceChecklist> Checklists => Set<MaintenanceChecklist>();
+    public DbSet<Engineer>             Engineers       => Set<Engineer>();
+    public DbSet<Simulator>            Simulators      => Set<Simulator>();
+    public DbSet<MaintenanceLog>       MaintenanceLogs => Set<MaintenanceLog>();
+    public DbSet<MaintenanceChecklist> Checklists      => Set<MaintenanceChecklist>();
+    public DbSet<SimulatorDefect>      Defects         => Set<SimulatorDefect>();
 
     public override int SaveChanges()
     {
@@ -118,6 +119,34 @@ public class AssetDbContext(DbContextOptions<AssetDbContext> options) : DbContex
             e.HasIndex(x => new { x.SimulatorId, x.ChecklistDate })
                 .IsUnique()
                 .HasDatabaseName("uq_checklist_simulator_date");
+        });
+
+        modelBuilder.Entity<SimulatorDefect>(e =>
+        {
+            e.ToTable("simulator_defects");
+            e.HasKey(x => x.DefectId);
+            e.Property(x => x.DefectId).HasColumnName("defect_id").HasDefaultValueSql("gen_random_uuid()");
+            e.Property(x => x.SimulatorId).HasColumnName("simulator_id").IsRequired();
+            e.Property(x => x.SessionId).HasColumnName("session_id");
+            e.Property(x => x.ReportedBy).HasColumnName("reported_by").HasMaxLength(200).IsRequired();
+            e.Property(x => x.SystemAffected).HasColumnName("system_affected").HasMaxLength(100).IsRequired();
+            e.Property(x => x.Severity).HasColumnName("severity").HasMaxLength(30).IsRequired();
+            e.Property(x => x.InstructorNotes).HasColumnName("instructor_notes").HasColumnType("text").IsRequired();
+            e.Property(x => x.Status).HasColumnName("status").HasMaxLength(30).HasDefaultValue("Open").IsRequired();
+            e.Property(x => x.ResolutionNotes).HasColumnName("resolution_notes").HasColumnType("text");
+            e.Property(x => x.ResolvedByEngineerId).HasColumnName("resolved_by_engineer_id");
+            e.Property(x => x.ResolvedByEngineerCode).HasColumnName("resolved_by_engineer_code").HasMaxLength(50);
+            e.Property(x => x.ResolvedAt).HasColumnName("resolved_at");
+            e.Property(x => x.ReportedAt).HasColumnName("reported_at");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at");
+            e.Property(x => x.UpdatedAt).HasColumnName("updated_at");
+            e.HasOne(x => x.Simulator)
+                .WithMany(x => x.Defects)
+                .HasForeignKey(x => x.SimulatorId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => x.SimulatorId).HasDatabaseName("idx_defects_simulator_id");
+            e.HasIndex(x => x.Severity).HasDatabaseName("idx_defects_severity");
+            e.HasIndex(x => x.Status).HasDatabaseName("idx_defects_status");
         });
 
         ApplyUtcDateTimeConverters(modelBuilder);

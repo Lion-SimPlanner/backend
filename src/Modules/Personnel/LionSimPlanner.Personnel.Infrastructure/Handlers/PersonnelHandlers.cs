@@ -97,6 +97,13 @@ public sealed class HandleTrainingRecordCompletedHandler(
             InstructorNotes = notification.InstructorNotes
         };
 
-        await cmsClient.PostTrainingRecordAsync(payload, cancellationToken);
+        try
+        {
+            await cmsClient.PostTrainingRecordAsync(payload, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "[CMS Sync] Failed to post training record to external CMS for session {SessionId}. Local grading completed successfully.", notification.SessionId);
+        }
     }
 }

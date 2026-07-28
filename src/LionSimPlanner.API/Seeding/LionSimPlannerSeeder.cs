@@ -6,19 +6,20 @@ using LionSimPlanner.Personnel.Domain.Enums;
 using LionSimPlanner.Personnel.Infrastructure;
 using LionSimPlanner.Scheduling.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Bogus;
 using Microsoft.Extensions.Logging;
 
 namespace LionSimPlanner.API.Seeding;
 
 public static class LionSimPlannerSeeder
 {
-    private static readonly string[] Fleet =
+    private static readonly string[] AircraftTypes =
     [
-        "B737-800NG", "B737-900ER", "B737 MAX 8",
-        "A320-200", "A320neo",
-        "A330-300", "A330-900neo",
-        "ATR 72-500", "ATR 72-600"
+        "B737-800NG",
+        "B737 MAX 8",
+        "A320-200",
+        "A320neo",
+        "A330-300",
+        "ATR 72-600"
     ];
 
     private static readonly Guid[] SimulatorIds =
@@ -27,6 +28,8 @@ public static class LionSimPlannerSeeder
         new("a1a1a1a1-0001-0001-0001-000000000002"),
         new("a1a1a1a1-0001-0001-0001-000000000003"),
         new("a1a1a1a1-0001-0001-0001-000000000004"),
+        new("a1a1a1a1-0001-0001-0001-000000000005"),
+        new("a1a1a1a1-0001-0001-0001-000000000006"),
     ];
 
     private static readonly Guid[] PilotIds =
@@ -40,7 +43,9 @@ public static class LionSimPlannerSeeder
         new("b2b2b2b2-0002-0002-0002-000000000007"),
         new("b2b2b2b2-0002-0002-0002-000000000008"),
         new("b2b2b2b2-0002-0002-0002-000000000009"),
-        new("b2b2b2b2-0002-0002-0002-00000000000a"),
+        new("b2b2b2b2-0002-0002-0002-000000000010"),
+        new("b2b2b2b2-0002-0002-0002-000000000011"),
+        new("b2b2b2b2-0002-0002-0002-000000000012"),
     ];
 
     private static readonly Guid[] InstructorIds =
@@ -48,6 +53,9 @@ public static class LionSimPlannerSeeder
         new("c3c3c3c3-0003-0003-0003-000000000001"),
         new("c3c3c3c3-0003-0003-0003-000000000002"),
         new("c3c3c3c3-0003-0003-0003-000000000003"),
+        new("c3c3c3c3-0003-0003-0003-000000000004"),
+        new("c3c3c3c3-0003-0003-0003-000000000005"),
+        new("c3c3c3c3-0003-0003-0003-000000000006"),
     ];
 
     private static readonly Guid[] EngineerIds =
@@ -56,6 +64,8 @@ public static class LionSimPlannerSeeder
         new("d4d4d4d4-0004-0004-0004-000000000002"),
         new("d4d4d4d4-0004-0004-0004-000000000003"),
         new("d4d4d4d4-0004-0004-0004-000000000004"),
+        new("d4d4d4d4-0004-0004-0004-000000000005"),
+        new("d4d4d4d4-0004-0004-0004-000000000006"),
     ];
 
     public static async Task SeedAsync(
@@ -64,275 +74,133 @@ public static class LionSimPlannerSeeder
         SchedulingDbContext sched,
         ILogger logger)
     {
+        try
+        {
+            await hr.Database.ExecuteSqlRawAsync(@"
+                TRUNCATE TABLE hr.instructors CASCADE;
+                TRUNCATE TABLE hr.pilots CASCADE;
+                TRUNCATE TABLE maint.engineers CASCADE;
+                TRUNCATE TABLE maint.simulators CASCADE;
+            ");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "[Seeder] Truncate raw SQL failed, proceeding with standard EF Core clearing.");
+            hr.Pilots.RemoveRange(hr.Pilots);
+            hr.Instructors.RemoveRange(hr.Instructors);
+            maint.Simulators.RemoveRange(maint.Simulators);
+            maint.Engineers.RemoveRange(maint.Engineers);
+            await hr.SaveChangesAsync();
+            await maint.SaveChangesAsync();
+        }
+
         await SeedPersonnelAsync(hr, logger);
         await SeedAssetsAsync(maint, logger);
     }
 
     private static async Task SeedPersonnelAsync(PersonnelDbContext db, ILogger logger)
     {
-        var hasPilots = await db.Pilots.AnyAsync();
-        var hasInstructors = await db.Instructors.AnyAsync();
-        if (hasPilots && hasInstructors) return;
-
-        var faker = new Faker("en");
         var now = DateTime.UtcNow;
-        if (!hasPilots)
+
+        // 12 Trainees (2 per aircraft type, strict Trainee naming)
+        var pilots = new List<Pilot>();
+        for (var i = 0; i < 12; i++)
         {
-            var pilots = new List<Pilot>();
-            for (var i = 0; i < 10; i++)
+            var planeType = AircraftTypes[i / 2];
+            pilots.Add(new Pilot
             {
-                var isCapt = i < 6;
-                var rank = isCapt ? PilotRank.Captain : PilotRank.FirstOfficer;
-                var prefix = isCapt ? "Capt." : "F/O";
-                var fn = faker.Name.FirstName();
-                var ln = faker.Name.LastName();
-                var pilotDutyMode = faker.Random.Int(0, 99);
-                var pilotDutyEnd = pilotDutyMode switch
-                {
-                    <= 34 => now.AddHours(-faker.Random.Double(12, 36)),
-                    <= 74 => now.AddHours(-faker.Random.Double(8, 12)),
-                    _ => now.AddHours(-faker.Random.Double(0.25, 7.5)),
-                };
-                var pilotNextDuty = pilotDutyEnd.AddHours(faker.Random.Double(2, 18));
-                pilots.Add(new Pilot
-                {
-                    PilotId = PilotIds[i],
-                    EmployeeCode = $"LGA-PLT-{i + 1:000}",
-                    FullName = $"{prefix} {fn} {ln}",
-                    CorporateEmail = $"pilot{i + 1}@lionair.co.id",
-                    Rank = rank,
-                    TypeRatings = Fleet.Take(isCapt ? 2 : 1).ToList(),
-                    MedicalExpiry = now.AddMonths(12),
-                    LastTrainingDate = now.AddDays(-30),
-                    NextTrainingDue = now.AddDays(90),
-                    RequiredSyllabus = "InitialTypeRating",
-                    LastDutyEndTime = pilotDutyEnd,
-                    NextDutyStartTime = pilotNextDuty,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                });
-            }
-            db.Pilots.AddRange(pilots);
+                PilotId = PilotIds[i],
+                EmployeeCode = $"LGA-PLT-{i + 1:000}",
+                FullName = $"Trainee Pilot {i + 1}",
+                CorporateEmail = $"pilot{i + 1}@lionair.co.id",
+                Rank = PilotRank.FirstOfficer,
+                TypeRatings = [planeType],
+                MedicalExpiry = now.AddMonths(12),
+                LastTrainingDate = now.AddDays(-30),
+                NextTrainingDue = now.AddDays(90),
+                RequiredSyllabus = "InitialTypeRating",
+                LastDutyEndTime = now.AddHours(-16),
+                NextDutyStartTime = now.AddHours(8),
+                CreatedAt = now,
+                UpdatedAt = now,
+            });
         }
+        db.Pilots.AddRange(pilots);
 
-        if (!hasInstructors)
+        // 6 Instructors (1 per aircraft type)
+        var instructors = new List<Instructor>();
+        for (var i = 0; i < 6; i++)
         {
-            var instructors = new List<Instructor>();
-            var syllabusCatalog = new[]
+            var planeType = AircraftTypes[i];
+            instructors.Add(new Instructor
             {
-                "InitialTypeRating",
-                "RecurrentTraining",
-                "LOFT",
-                "CommandUpgrade",
-                "OPC",
-                "LPC",
-                "MCC",
-                "CRM",
-                "Requalification",
-                "Differences"
-            };
-            var usedInstructorLoadouts = new HashSet<string>(StringComparer.Ordinal);
-
-            for (var i = 0; i < 3; i++)
-            {
-                var fn = faker.Name.FirstName();
-                var ln = faker.Name.LastName();
-                List<string> certifiedTypes;
-                List<string> authorizedSyllabi;
-                string signature;
-
-                do
-                {
-                    var typeCount = faker.Random.Int(2, Math.Min(6, Fleet.Length));
-                    var syllabusCount = faker.Random.Int(2, Math.Min(5, syllabusCatalog.Length));
-
-                    certifiedTypes = faker.Random.Shuffle(Fleet.ToList())
-                        .Take(typeCount)
-                        .OrderBy(x => x, StringComparer.Ordinal)
-                        .ToList();
-
-                    authorizedSyllabi = faker.Random.Shuffle(syllabusCatalog.ToList())
-                        .Take(syllabusCount)
-                        .OrderBy(x => x, StringComparer.Ordinal)
-                        .ToList();
-
-                    signature = string.Join('|', certifiedTypes) + "::" + string.Join('|', authorizedSyllabi);
-                }
-                while (!usedInstructorLoadouts.Add(signature));
-
-                var instructorDutyMode = faker.Random.Int(0, 99);
-                var instructorDutyEnd = instructorDutyMode switch
-                {
-                    <= 29 => now.AddHours(-faker.Random.Double(12, 30)),
-                    <= 69 => now.AddHours(-faker.Random.Double(8, 12)),
-                    _ => now.AddHours(-faker.Random.Double(0.25, 7.0)),
-                };
-                var instructorNextDuty = instructorDutyEnd.AddHours(faker.Random.Double(1.5, 14));
-                instructors.Add(new Instructor
-                {
-                    InstructorId = InstructorIds[i],
-                    EmployeeCode = $"LGA-INS-{i + 1:000}",
-                    FullName = $"Instr. {fn} {ln}",
-                    CorporateEmail = $"instructor{i + 1}@lionair.co.id",
-                    RoleLevel = faker.PickRandom(InstructorRoleLevel.SFI, InstructorRoleLevel.TRI, InstructorRoleLevel.TRE),
-                    CertifiedTypes = certifiedTypes,
-                    AuthorizedSyllabi = authorizedSyllabi,
-                    LicenseExpiry = now.AddMonths(24),
-                    LastDutyEndTime = instructorDutyEnd,
-                    NextDutyStartTime = instructorNextDuty,
-                    CurrentMonthlyHours = faker.Random.Int(8, 92),
-                    MaxMonthlyHours = 24,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                });
-            }
-            db.Instructors.AddRange(instructors);
+                InstructorId = InstructorIds[i],
+                EmployeeCode = $"LGA-INS-{i + 1:000}",
+                FullName = $"Instr. Instructor {i + 1}",
+                CorporateEmail = $"instructor{i + 1}@lionair.co.id",
+                RoleLevel = InstructorRoleLevel.TRI,
+                CertifiedTypes = [planeType],
+                AuthorizedSyllabi = ["InitialTypeRating", "RecurrentTraining", "LOFT", "OPC", "LPC"],
+                LicenseExpiry = now.AddMonths(24),
+                LastDutyEndTime = now.AddHours(-16),
+                NextDutyStartTime = now.AddHours(8),
+                CurrentMonthlyHours = 20,
+                MaxMonthlyHours = 100,
+                CreatedAt = now,
+                UpdatedAt = now,
+            });
         }
+        db.Instructors.AddRange(instructors);
 
         await db.SaveChangesAsync();
-        logger.LogInformation("[Seeder] hr schema: pilots seeded={PilotsSeeded}, instructors seeded={InstructorsSeeded}.", !hasPilots, !hasInstructors);
+        logger.LogInformation("[Seeder] hr schema seeded: 12 Trainees and 6 Instructors.");
     }
 
     private static async Task SeedAssetsAsync(AssetDbContext db, ILogger logger)
     {
-        var hasSimulators = await db.Simulators.AnyAsync();
-        var hasEngineers = await db.Engineers.AnyAsync();
-        if (hasSimulators && hasEngineers) return;
-
         var now = DateTime.UtcNow;
 
-        if (!hasSimulators)
+        // 6 Simulators (1 per aircraft type, all 'Ready')
+        var simulators = new List<Simulator>();
+        for (var i = 0; i < 6; i++)
         {
-            var simulators = new[]
+            var planeType = AircraftTypes[i];
+            simulators.Add(new Simulator
             {
-                new Simulator
-                {
-                    SimulatorId = SimulatorIds[0],
-                    Name = "Jakarta B737-800NG Full Flight Simulator",
-                    BayNumber = "Bay 1",
-                    AircraftType = "B737-800NG",
-                    Status = SimulatorStatus.Ready,
-                    LastStatusChangedAt = now,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-                new Simulator
-                {
-                    SimulatorId = SimulatorIds[1],
-                    Name = "Jakarta A330-900neo Full Flight Simulator",
-                    BayNumber = "Bay 2",
-                    AircraftType = "A330-900neo",
-                    Status = SimulatorStatus.Ready,
-                    LastStatusChangedAt = now,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-                new Simulator
-                {
-                    SimulatorId = SimulatorIds[2],
-                    Name = "Jakarta A320neo Full Flight Simulator",
-                    BayNumber = "Bay 3",
-                    AircraftType = "A320neo",
-                    Status = SimulatorStatus.Ready,
-                    LastStatusChangedAt = now,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-                new Simulator
-                {
-                    SimulatorId = SimulatorIds[3],
-                    Name = "Jakarta B737 MAX 8 Full Flight Simulator",
-                    BayNumber = "Bay 4",
-                    AircraftType = "B737 MAX 8",
-                    Status = SimulatorStatus.AOG,
-                    LastStatusChangedAt = now,
-                    CreatedAt = now,
-                    UpdatedAt = now,
-                },
-            };
-            db.Simulators.AddRange(simulators);
+                SimulatorId = SimulatorIds[i],
+                Name = $"Jakarta {planeType} Full Flight Simulator",
+                BayNumber = $"Bay {i + 1}",
+                AircraftType = planeType,
+                Status = SimulatorStatus.Ready,
+                LastStatusChangedAt = now,
+                CreatedAt = now,
+                UpdatedAt = now,
+            });
         }
+        db.Simulators.AddRange(simulators);
 
-        var desiredEngineers = new[]
+        // 6 Engineers (1-to-1 with 6 simulators)
+        var engineers = new List<Engineer>();
+        for (var i = 0; i < 6; i++)
         {
-            new LionSimPlanner.Asset.Domain.Entities.Engineer
+            var planeType = AircraftTypes[i];
+            engineers.Add(new Engineer
             {
-                EngineerID = EngineerIds[0],
-                EmployeeCode = "LGA-ENG-001",
-                FullName = "Eng. Marek Kowalski",
+                EngineerID = EngineerIds[i],
+                EmployeeCode = $"LGA-ENG-{i + 1:000}",
+                FullName = $"Engineer {i + 1}",
                 ClearanceLevel = "L3",
-                // Primary machine: Bay 1 (B737-800NG)
-                HardwareRatings = new List<string> { "B737-800NG" },
+                HardwareRatings = [planeType],
                 ShiftStartTime = now.Date.AddHours(6),
-                ShiftEndTime = now.Date.AddHours(14),
-                IsOnCall = false,
-                CreatedAt = now,
-                UpdatedAt = now,
-            },
-            new LionSimPlanner.Asset.Domain.Entities.Engineer
-            {
-                EngineerID = EngineerIds[1],
-                EmployeeCode = "LGA-ENG-002",
-                FullName = "Eng. Felix Adisa",
-                ClearanceLevel = "L2",
-                // Primary machine: Bay 2 (A330-900neo)
-                HardwareRatings = new List<string> { "A330-900neo" },
-                ShiftStartTime = now.Date.AddHours(6),
-                ShiftEndTime = now.Date.AddHours(14),
-                IsOnCall = false,
-                CreatedAt = now,
-                UpdatedAt = now,
-            },
-            new LionSimPlanner.Asset.Domain.Entities.Engineer
-            {
-                EngineerID = EngineerIds[2],
-                EmployeeCode = "LGA-ENG-003",
-                FullName = "Eng. Thomas Brennan",
-                ClearanceLevel = "L3",
-                // Primary machine: Bay 3 (A320neo)
-                HardwareRatings = new List<string> { "A320neo" },
-                ShiftStartTime = now.Date.AddHours(14),
                 ShiftEndTime = now.Date.AddHours(22),
                 IsOnCall = false,
                 CreatedAt = now,
                 UpdatedAt = now,
-            },
-            new LionSimPlanner.Asset.Domain.Entities.Engineer
-            {
-                EngineerID = EngineerIds[3],
-                EmployeeCode = "LGA-ENG-004",
-                FullName = "Eng. Daniel Rahman",
-                ClearanceLevel = "L3",
-                // Primary machine: Bay 4 (B737 MAX 8)
-                HardwareRatings = new List<string> { "B737 MAX 8" },
-                ShiftStartTime = now.Date.AddHours(14),
-                ShiftEndTime = now.Date.AddHours(22),
-                IsOnCall = false,
-                CreatedAt = now,
-                UpdatedAt = now,
-            },
-        };
-
-        var existingEngineers = await db.Engineers.ToListAsync();
-        foreach (var desired in desiredEngineers)
-        {
-            var existing = existingEngineers.FirstOrDefault(e => e.EmployeeCode == desired.EmployeeCode);
-            if (existing is null)
-            {
-                db.Engineers.Add(desired);
-                continue;
-            }
-
-            existing.FullName = desired.FullName;
-            existing.ClearanceLevel = desired.ClearanceLevel;
-            existing.HardwareRatings = desired.HardwareRatings;
-            existing.ShiftStartTime = desired.ShiftStartTime;
-            existing.ShiftEndTime = desired.ShiftEndTime;
-            existing.IsOnCall = desired.IsOnCall;
-            existing.UpdatedAt = now;
+            });
         }
+        db.Engineers.AddRange(engineers);
 
         await db.SaveChangesAsync();
-        logger.LogInformation("[Seeder] maint schema: simulators seeded={SimulatorsSeeded}, engineers seeded={EngineersSeeded}.", !hasSimulators, !hasEngineers);
+        logger.LogInformation("[Seeder] maint schema seeded: 6 Simulators and 6 Engineers.");
     }
 }

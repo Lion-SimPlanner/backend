@@ -21,4 +21,5 @@ public class Simulator
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<MaintenanceLog> MaintenanceLogs { get; set; } = new List<MaintenanceLog>();
+    public ICollection<SimulatorDefect> Defects { get; set; } = new List<SimulatorDefect>();
 }

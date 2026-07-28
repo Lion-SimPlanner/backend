@@ -84,18 +84,32 @@ public sealed class FtlValidationService
 
         if (!isExternalSession)
         {
-            var syllabusPrefix = session.SyllabusId.Split('_')[0];
-            if (!instructor.CertifiedTypes.Contains(syllabusPrefix, StringComparer.OrdinalIgnoreCase))
+            var parts = session.SyllabusId.Split('_');
+            var syllabusPrefix = parts[0];
+            var baseSyllabus = parts.Length > 1 ? parts[^1] : session.SyllabusId;
+
+            var hasTypeCert = instructor.CertifiedTypes.Any(t =>
+                string.Equals(t, syllabusPrefix, StringComparison.OrdinalIgnoreCase));
+
+            if (!hasTypeCert)
+            {
                 result.AddViolation(
                     $"Type Certification Mismatch — Instructor {instructor.FullName} ({instructor.EmployeeCode}): " +
                     $"Not certified on aircraft type '{syllabusPrefix}' (from syllabus '{session.SyllabusId}'). " +
                     $"Holds certifications for: {string.Join(", ", instructor.CertifiedTypes)}.");
+            }
 
-            if (!instructor.AuthorizedSyllabi.Contains(session.SyllabusId, StringComparer.OrdinalIgnoreCase))
+            var hasSyllabusAuth = instructor.AuthorizedSyllabi.Any(s =>
+                string.Equals(s, session.SyllabusId, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(s, baseSyllabus, StringComparison.OrdinalIgnoreCase));
+
+            if (!hasSyllabusAuth)
+            {
                 result.AddViolation(
                     $"Syllabus Authorization Missing — Instructor {instructor.FullName} ({instructor.EmployeeCode}): " +
                     $"Not authorized for syllabus '{session.SyllabusId}'. " +
                     $"Authorized syllabi: {string.Join(", ", instructor.AuthorizedSyllabi)}.");
+            }
         }
 
         if (instructor.LicenseExpiry < session.StartTime)

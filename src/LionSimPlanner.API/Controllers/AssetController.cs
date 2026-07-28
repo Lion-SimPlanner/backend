@@ -205,6 +205,96 @@ public class AssetController(ISender mediator, AssetDbContext db) : ControllerBa
                 : "BLOCKED — Engineer must resolve blocking issues before sessions can be published."
         });
     }
+
+    [HttpPost("simulators/{id}/defects")]
+    [Authorize(Roles = "Instructor,Admin")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SubmitDefectReport(
+        Guid id,
+        [FromBody] SubmitDefectReportRequest request,
+        CancellationToken ct)
+    {
+        var result = await mediator.Send(new SubmitDefectReportCommand(
+            id,
+            request.SessionId,
+            request.ReportedBy,
+            request.SystemAffected,
+            request.Severity,
+            request.InstructorNotes), ct);
+
+        if (!result.Success)
+            return NotFound(new { error = result.ErrorMessage });
+
+        return StatusCode(StatusCodes.Status201Created, new
+        {
+            defectId    = result.DefectId,
+            simulatorId = id,
+            severity    = request.Severity,
+            status      = "Open",
+            message     = request.Severity == "AOG"
+                ? "AOG defect reported. Simulator locked immediately."
+                : $"{request.Severity} defect reported and logged."
+        });
+    }
+
+    [HttpGet("defects")]
+    [Authorize]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetDefectReports(CancellationToken ct)
+    {
+        var defects = await db.Defects
+            .AsNoTracking()
+            .Where(d => d.Status != "Resolved")
+            .OrderByDescending(d => d.ReportedAt)
+            .Select(d => new
+            {
+                defectId        = d.DefectId,
+                simulatorId     = d.SimulatorId,
+                sessionId       = d.SessionId,
+                reportedBy      = d.ReportedBy,
+                systemAffected  = d.SystemAffected,
+                severity        = d.Severity,
+                instructorNotes = d.InstructorNotes,
+                status          = d.Status,
+                resolutionNotes = d.ResolutionNotes,
+                reportedAt      = d.ReportedAt,
+                resolvedAt      = d.ResolvedAt
+            })
+            .ToListAsync(ct);
+
+        return Ok(defects);
+    }
+
+    [HttpPost("defects/{id}/resolve")]
+    [Authorize(Roles = "Engineer")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResolveDefectReport(
+        Guid id,
+        [FromBody] ResolveDefectReportRequest request,
+        CancellationToken ct)
+    {
+        var engineerIdClaim   = User.FindFirst("sub")?.Value;
+        var engineerCodeClaim = User.FindFirst("employee_code")?.Value ?? "UNKNOWN";
+        var engineerId        = engineerIdClaim is not null ? Guid.Parse(engineerIdClaim) : Guid.Empty;
+
+        var result = await mediator.Send(new ResolveDefectReportCommand(
+            id,
+            request.ResolutionNotes,
+            engineerId,
+            engineerCodeClaim), ct);
+
+        if (!result.Success)
+            return NotFound(new { error = result.ErrorMessage });
+
+        return Ok(new
+        {
+            defectId   = id,
+            resolvedAt = result.ResolvedAt,
+            message    = "Defect resolved. Simulator status updated to Ready if AOG was active."
+        });
+    }
 }
 
 public record SetSimulatorStatusRequest(SimulatorStatus Status, string? FaultDescription);
@@ -212,3 +302,7 @@ public record ResolveDefectRequest(string ResolutionDetails);
 public record ResolveDefectByBodyRequest(Guid SimulatorId, string ResolutionDescription);
 public record SubmitChecklistRequest(
     Guid SimulatorId, DateOnly ChecklistDate, bool IsCleared, string Notes, string? BlockingReason);
+public record SubmitDefectReportRequest(
+    Guid? SessionId, string ReportedBy, string SystemAffected, string Severity, string InstructorNotes);
+public record ResolveDefectReportRequest(string ResolutionNotes);
+
