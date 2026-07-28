@@ -41,3 +41,23 @@ public record SubmitMaintenanceChecklistCommand(
     : IRequest<SubmitChecklistResult>;
 
 public record SubmitChecklistResult(bool Success, Guid ChecklistId, string? ErrorMessage);
+
+public record SubmitDefectReportCommand(
+    Guid SimulatorId,
+    Guid? SessionId,
+    string ReportedBy,
+    string SystemAffected,
+    string Severity,
+    string InstructorNotes)
+    : IRequest<SubmitDefectReportResult>;
+
+public record SubmitDefectReportResult(bool Success, Guid? DefectId, string? ErrorMessage);
+
+public record ResolveDefectReportCommand(
+    Guid DefectId,
+    string ResolutionNotes,
+    Guid EngineerIdRef,
+    string EngineerCode)
+    : IRequest<ResolveDefectReportResult>;
+
+public record ResolveDefectReportResult(bool Success, string? ErrorMessage, DateTime? ResolvedAt);
