@@ -31,6 +31,25 @@ public class SimulatorSession
     /// <summary>Duration in whole hours — used by FTL monthly hours cap check.</summary>
     public double DurationHours => (EndTime - StartTime).TotalHours;
 
+    public void TransitionTo(SessionStatus target)
+    {
+        var allowed = (Status, target) switch
+        {
+            (SessionStatus.Draft, SessionStatus.Scheduled) => true,
+            (SessionStatus.Draft, SessionStatus.Cancelled) => true,
+            (SessionStatus.Scheduled, SessionStatus.InProgress) => true,
+            (SessionStatus.Scheduled, SessionStatus.Cancelled) => true,
+            (SessionStatus.InProgress, SessionStatus.Completed) => true,
+            (SessionStatus.InProgress, SessionStatus.Cancelled) => true,
+            (SessionStatus.InProgress, SessionStatus.TerminatedEarly) => true,
+            _ => false,
+        };
+        if (!allowed)
+            throw new InvalidOperationException(
+                $"Cannot transition session {SessionId} from {Status} to {target}.");
+        Status = target;
+    }
+
     /// <summary>
     /// Pilot in command (Captain seat).
     /// Null in DRAFT state; must be set before Validation Gate allows SCHEDULED transition.

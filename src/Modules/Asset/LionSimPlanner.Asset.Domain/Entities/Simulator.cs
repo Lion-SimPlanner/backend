@@ -22,4 +22,14 @@ public class Simulator
 
     public ICollection<MaintenanceLog> MaintenanceLogs { get; set; } = new List<MaintenanceLog>();
     public ICollection<SimulatorDefect> Defects { get; set; } = new List<SimulatorDefect>();
+
+    public void ApplyDefect(SimulatorDefect defect)
+    {
+        if (defect.Severity.Equals("AOG", StringComparison.OrdinalIgnoreCase))
+            Status = SimulatorStatus.AOG;
+        else if (defect.Severity.Equals("MEL", StringComparison.OrdinalIgnoreCase))
+            Status = SimulatorStatus.MEL;
+        else if (defect.Severity.Equals("Defect", StringComparison.OrdinalIgnoreCase))
+            Status = SimulatorStatus.Defect;
+    }
 }

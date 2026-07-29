@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LionSimPlanner.Notifications")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7532e9b3bf2c3c6de59cda50263ab52dea9ff557")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+954cd6708c5f0aeb29fd3a66a85779baf28d88c9")]
 [assembly: System.Reflection.AssemblyProductAttribute("LionSimPlanner.Notifications")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LionSimPlanner.Notifications")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
