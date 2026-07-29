@@ -22,4 +22,10 @@
     <Project Path="src/Modules/Scheduling/LionSimPlanner.Scheduling.Domain/LionSimPlanner.Scheduling.Domain.csproj" />
     <Project Path="src/Modules/Scheduling/LionSimPlanner.Scheduling.Infrastructure/LionSimPlanner.Scheduling.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LionSimPlanner.Asset.Domain.Tests/LionSimPlanner.Asset.Domain.Tests.csproj" />
+    <Project Path="tests/LionSimPlanner.Personnel.Application.Tests/LionSimPlanner.Personnel.Application.Tests.csproj" />
+    <Project Path="tests/LionSimPlanner.Scheduling.Application.Tests/LionSimPlanner.Scheduling.Application.Tests.csproj" />
+    <Project Path="tests/LionSimPlanner.Scheduling.Domain.Tests/LionSimPlanner.Scheduling.Domain.Tests.csproj" />
+  </Folder>
 </Solution>
