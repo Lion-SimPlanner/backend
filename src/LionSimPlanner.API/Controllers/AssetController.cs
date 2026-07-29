@@ -241,11 +241,13 @@ public class AssetController(ISender mediator, AssetDbContext db) : ControllerBa
     [HttpGet("defects")]
     [Authorize]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetDefectReports(CancellationToken ct)
+    public async Task<IActionResult> GetDefectReports([FromQuery] bool includeResolved, CancellationToken ct)
     {
-        var defects = await db.Defects
-            .AsNoTracking()
-            .Where(d => d.Status != "Resolved")
+        var query = db.Defects.AsNoTracking();
+        if (!includeResolved)
+            query = query.Where(d => d.Status != "Resolved");
+
+        var defects = await query
             .OrderByDescending(d => d.ReportedAt)
             .Select(d => new
             {
