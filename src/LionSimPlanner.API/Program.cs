@@ -18,6 +18,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. JSON Serializer Configuration
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -25,6 +26,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new NullableUtcDateTimeJsonConverter());
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -49,10 +51,11 @@ builder.Services.AddSwaggerGen(c =>
         {
             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
         },
-        []
+        Array.Empty<string>()
     }});
 });
 
+// 2. JWT Authentication Setup
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key is not configured.");
 
@@ -92,8 +95,9 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy("PilotOrAbove",   p => p.RequireRole("Pilot", "Instructor", "Admin"));
 });
 
+// 3. CORS Configuration (Handles both Localhost and Vercel Deployment)
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? ["http://localhost:5173", "http://localhost:3000"];
+    ?? new[] { "http://localhost:5173", "http://localhost:3000" };
 
 builder.Services.AddCors(opts =>
     opts.AddPolicy("Frontend", p => p
@@ -104,6 +108,7 @@ builder.Services.AddCors(opts =>
 
 builder.Services.AddSignalR();
 
+// 4. Database Contexts Setup
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
 
@@ -125,6 +130,7 @@ builder.Services.AddDbContext<AssetDbContext>(o =>
      .ConfigureWarnings(w => w.Log(RelationalEventId.PendingModelChangesWarning))
      .UseSnakeCaseNamingConvention());
 
+// 5. MediatR, Notifications, and Services
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblies(
@@ -146,6 +152,7 @@ builder.Services.AddHttpClient<CmsApiClient>((sp, client) =>
         client.DefaultRequestHeaders.Add("X-API-Key", opts.ApiKey);
 });
 
+// 6. Quartz Background Jobs
 builder.Services.AddQuartz(q =>
 {
     var jobKey = new JobKey("CmsSyncJob", "CmsSync");
@@ -162,7 +169,8 @@ builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// Enable Swagger in Development AND Production staging for API testing
+if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("EnableSwagger"))
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
@@ -178,7 +186,12 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<SimPlannerHub>("/hub/simplanner");
 
-if (app.Environment.IsDevelopment())
+// 7. Decoupled Auto-Migration and Seeding Logic
+// Runs in Development OR in Production if Database:AutoMigrateOnStartup is set to true
+var shouldInitializeDb = app.Environment.IsDevelopment() 
+    || builder.Configuration.GetValue<bool>("Database:AutoMigrateOnStartup");
+
+if (shouldInitializeDb)
 {
     using var scope = app.Services.CreateScope();
     var svc = scope.ServiceProvider;
@@ -186,6 +199,8 @@ if (app.Environment.IsDevelopment())
     var hrDb    = svc.GetRequiredService<PersonnelDbContext>();
     var schedDb = svc.GetRequiredService<SchedulingDbContext>();
     var maintDb = svc.GetRequiredService<AssetDbContext>();
+
+    log.LogInformation("Starting automated database migrations and seeding...");
 
     try
     {
@@ -281,8 +296,14 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-app.Run();
+// Ensure web server binds dynamically to PORT env var (required by Render/Railway)
+var port = Environment.GetEnvironmentVariable("PORT");
+if (port is not null)
+    app.Run($"http://0.0.0.0:{port}");
+else
+    app.Run();
 
+#region Migration Helper Methods
 static async Task EnsureMigrationHistorySnakeCaseAsync(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade db, string schema)
 {
     await db.ExecuteSqlRawAsync($@"
@@ -364,3 +385,4 @@ static async Task EnsureAssetMigrationHistoryBaselineAsync(AssetDbContext db)
         ON CONFLICT (migration_id) DO NOTHING;
     ");
 }
+#endregion

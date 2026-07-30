@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LionSimPlanner.Scheduling.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+954cd6708c5f0aeb29fd3a66a85779baf28d88c9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+39338192df087cde69b323eb68d06e0b570e4510")]
 [assembly: System.Reflection.AssemblyProductAttribute("LionSimPlanner.Scheduling.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LionSimPlanner.Scheduling.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
