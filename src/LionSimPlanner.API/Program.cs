@@ -96,12 +96,16 @@ builder.Services.AddAuthorization(opts =>
 });
 
 // 3. CORS Configuration (Handles both Localhost and Vercel Deployment)
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5173", "http://localhost:3000" };
+var configOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+var railwayOrigins = (builder.Configuration["RailwayCorsOrigins"] ?? "")
+    .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+var allOrigins = (configOrigins ?? []).Concat(railwayOrigins).ToArray();
+if (allOrigins.Length == 0)
+    allOrigins = new[] { "http://localhost:3000" };
 
 builder.Services.AddCors(opts =>
     opts.AddPolicy("Frontend", p => p
-        .WithOrigins(allowedOrigins)
+        .WithOrigins(allOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()));
@@ -180,6 +184,7 @@ if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("Ena
     });
 }
 
+app.UseRouting();
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
