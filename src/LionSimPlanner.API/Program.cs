@@ -307,6 +307,8 @@ else
 static async Task EnsureMigrationHistorySnakeCaseAsync(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade db, string schema)
 {
     await db.ExecuteSqlRawAsync($@"
+        CREATE SCHEMA IF NOT EXISTS {schema};
+
         CREATE TABLE IF NOT EXISTS {schema}.__efmigrations (
             migration_id character varying(150) NOT NULL,
             product_version character varying(32) NOT NULL,
@@ -353,6 +355,8 @@ static async Task EnsureMigrationHistorySnakeCaseAsync(Microsoft.EntityFramework
 static async Task EnsureAssetMigrationHistoryBaselineAsync(AssetDbContext db)
 {
     await db.Database.ExecuteSqlRawAsync(@"
+        CREATE SCHEMA IF NOT EXISTS maint;
+
         CREATE TABLE IF NOT EXISTS maint.__efmigrations (
             migration_id character varying(150) NOT NULL,
             product_version character varying(32) NOT NULL,
