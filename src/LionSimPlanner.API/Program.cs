@@ -145,6 +145,16 @@ builder.Services.AddMediatR(cfg =>
 });
 
 builder.Services.Configure<GmailOptions>(builder.Configuration.GetSection("Notifications:Gmail"));
+builder.Services.PostConfigure<GmailOptions>(opts =>
+{
+    var extra = (builder.Configuration["RailwayCancellationAlertList"] ?? "")
+        .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    foreach (var email in extra)
+    {
+        if (!opts.CancellationAlertList.Contains(email, StringComparer.OrdinalIgnoreCase))
+            opts.CancellationAlertList.Add(email);
+    }
+});
 builder.Services.AddSingleton<IEmailNotificationService, EmailNotificationService>();
 
 builder.Services.Configure<CmsOptions>(builder.Configuration.GetSection("Cms"));
