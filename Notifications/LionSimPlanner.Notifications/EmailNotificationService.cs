@@ -93,6 +93,35 @@ public sealed class EmailNotificationService(
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    private static async Task TryConnectWithFallbackAsync(SmtpClient client, CancellationToken ct)
+    {
+        var timeout = TimeSpan.FromSeconds(30);
+        var attempts = new[]
+        {
+            ("smtp.gmail.com", 587, SecureSocketOptions.StartTls),
+            ("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect),
+        };
+
+        Exception? lastError = null;
+        foreach (var (host, port, options) in attempts)
+        {
+            try
+            {
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                linked.CancelAfter(timeout);
+                await client.ConnectAsync(host, port, options, linked.Token);
+                return;
+            }
+            catch (Exception ex)
+            {
+                lastError = ex;
+            }
+        }
+
+        throw lastError ?? new InvalidOperationException("No SMTP connection attempts available.");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     private async Task SendAsync(
         string subject,
         string htmlBody,
@@ -111,7 +140,7 @@ public sealed class EmailNotificationService(
             message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
             using var client = new SmtpClient();
-            await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls, ct);
+            await TryConnectWithFallbackAsync(client, ct);
             await client.AuthenticateAsync(_opts.SenderEmail, _opts.AppPassword, ct);
             await client.SendAsync(message, ct);
             await client.DisconnectAsync(quit: true, ct);
