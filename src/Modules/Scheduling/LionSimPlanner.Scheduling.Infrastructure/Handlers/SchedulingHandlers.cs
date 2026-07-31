@@ -111,6 +111,7 @@ public sealed class PublishSessionHandler(
     SchedulingDbContext db,
     ISender mediator,
     IConfiguration config,
+    IEmailNotificationService emailService,
     ILogger<PublishSessionHandler> logger)
     : IRequestHandler<PublishSessionCommand, PublishSessionResult>
 {
@@ -164,6 +165,26 @@ public sealed class PublishSessionHandler(
         await db.SaveChangesAsync(ct);
 
         logger.LogInformation("[ValidationGate] Session {Id} → SCHEDULED.", session.SessionId);
+
+        // ── Notify assigned crew via email ─────────────────────────────────────
+        var recipientEmails = new List<string>();
+        if (!string.IsNullOrWhiteSpace(captain.CorporateEmail))
+            recipientEmails.Add(captain.CorporateEmail);
+        if (fo is not null && !string.IsNullOrWhiteSpace(fo.CorporateEmail))
+            recipientEmails.Add(fo.CorporateEmail);
+
+        if (recipientEmails.Count > 0)
+        {
+            await emailService.SendSessionScheduledAsync(
+                session.SessionId,
+                session.StartTime,
+                session.EndTime,
+                session.SimulatorId.ToString(),
+                session.SyllabusId,
+                recipientEmails,
+                ct);
+        }
+
         return new PublishSessionResult(true, []);
     }
 }

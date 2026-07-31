@@ -15,4 +15,5 @@ public record PilotPriorityDto(
     IReadOnlyList<string> TypeRatings,
     DateTime MedicalExpiry,
     DateTime LastDutyEndTime,
-    DateTime NextDutyStartTime);
+    DateTime NextDutyStartTime,
+    string? CorporateEmail = null);

@@ -41,7 +41,8 @@ public sealed class GetPriorityQueueHandler(PersonnelDbContext db)
                 (p.TypeRatings ?? []).AsReadOnly(),
                 p.MedicalExpiry,
                 p.LastDutyEndTime,
-                p.NextDutyStartTime))
+                p.NextDutyStartTime,
+                p.CorporateEmail))
             .ToList()
             .AsReadOnly();
     }

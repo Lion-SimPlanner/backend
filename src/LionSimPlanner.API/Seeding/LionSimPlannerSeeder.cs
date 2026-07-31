@@ -74,26 +74,6 @@ public static class LionSimPlannerSeeder
         SchedulingDbContext sched,
         ILogger logger)
     {
-        try
-        {
-            await hr.Database.ExecuteSqlRawAsync(@"
-                TRUNCATE TABLE hr.instructors CASCADE;
-                TRUNCATE TABLE hr.pilots CASCADE;
-                TRUNCATE TABLE maint.engineers CASCADE;
-                TRUNCATE TABLE maint.simulators CASCADE;
-            ");
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "[Seeder] Truncate raw SQL failed, proceeding with standard EF Core clearing.");
-            hr.Pilots.RemoveRange(hr.Pilots);
-            hr.Instructors.RemoveRange(hr.Instructors);
-            maint.Simulators.RemoveRange(maint.Simulators);
-            maint.Engineers.RemoveRange(maint.Engineers);
-            await hr.SaveChangesAsync();
-            await maint.SaveChangesAsync();
-        }
-
         await SeedPersonnelAsync(hr, logger);
         await SeedAssetsAsync(maint, logger);
     }
@@ -102,105 +82,133 @@ public static class LionSimPlannerSeeder
     {
         var now = DateTime.UtcNow;
 
-        // 12 Trainees (2 per aircraft type, strict Trainee naming)
-        var pilots = new List<Pilot>();
-        for (var i = 0; i < 12; i++)
+        if (await db.Pilots.AnyAsync())
         {
-            var planeType = AircraftTypes[i / 2];
-            pilots.Add(new Pilot
-            {
-                PilotId = PilotIds[i],
-                EmployeeCode = $"LGA-PLT-{i + 1:000}",
-                FullName = $"Trainee Pilot {i + 1}",
-                CorporateEmail = $"pilot{i + 1}@lionair.co.id",
-                Rank = PilotRank.FirstOfficer,
-                TypeRatings = [planeType],
-                MedicalExpiry = now.AddMonths(12),
-                LastTrainingDate = now.AddDays(-30),
-                NextTrainingDue = now.AddDays(90),
-                RequiredSyllabus = "InitialTypeRating",
-                LastDutyEndTime = now.AddHours(-16),
-                NextDutyStartTime = now.AddHours(8),
-                CreatedAt = now,
-                UpdatedAt = now,
-            });
+            logger.LogInformation("[Seeder] hr.pilots already has data — skipping pilot seed.");
         }
-        db.Pilots.AddRange(pilots);
+        else
+        {
+            // 12 Trainees (2 per aircraft type, strict Trainee naming)
+            var pilots = new List<Pilot>();
+            for (var i = 0; i < 12; i++)
+            {
+                var planeType = AircraftTypes[i / 2];
+                pilots.Add(new Pilot
+                {
+                    PilotId = PilotIds[i],
+                    EmployeeCode = $"LGA-PLT-{i + 1:000}",
+                    FullName = $"Trainee Pilot {i + 1}",
+                    CorporateEmail = $"pilot{i + 1}@lionair.co.id",
+                    Rank = PilotRank.FirstOfficer,
+                    TypeRatings = [planeType],
+                    MedicalExpiry = now.AddMonths(12),
+                    LastTrainingDate = now.AddDays(-30),
+                    NextTrainingDue = now.AddDays(90),
+                    RequiredSyllabus = "InitialTypeRating",
+                    LastDutyEndTime = now.AddHours(-16),
+                    NextDutyStartTime = now.AddHours(8),
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                });
+            }
+            db.Pilots.AddRange(pilots);
+        }
 
-        // 6 Instructors (1 per aircraft type)
-        var instructors = new List<Instructor>();
-        for (var i = 0; i < 6; i++)
+        if (await db.Instructors.AnyAsync())
         {
-            var planeType = AircraftTypes[i];
-            instructors.Add(new Instructor
-            {
-                InstructorId = InstructorIds[i],
-                EmployeeCode = $"LGA-INS-{i + 1:000}",
-                FullName = $"Instr. Instructor {i + 1}",
-                CorporateEmail = $"instructor{i + 1}@lionair.co.id",
-                RoleLevel = InstructorRoleLevel.TRI,
-                CertifiedTypes = [planeType],
-                AuthorizedSyllabi = ["InitialTypeRating", "RecurrentTraining", "LOFT", "OPC", "LPC"],
-                LicenseExpiry = now.AddMonths(24),
-                LastDutyEndTime = now.AddHours(-16),
-                NextDutyStartTime = now.AddHours(8),
-                CurrentMonthlyHours = 20,
-                MaxMonthlyHours = 100,
-                CreatedAt = now,
-                UpdatedAt = now,
-            });
+            logger.LogInformation("[Seeder] hr.instructors already has data — skipping instructor seed.");
         }
-        db.Instructors.AddRange(instructors);
+        else
+        {
+            // 6 Instructors (1 per aircraft type)
+            var instructors = new List<Instructor>();
+            for (var i = 0; i < 6; i++)
+            {
+                var planeType = AircraftTypes[i];
+                instructors.Add(new Instructor
+                {
+                    InstructorId = InstructorIds[i],
+                    EmployeeCode = $"LGA-INS-{i + 1:000}",
+                    FullName = $"Instr. Instructor {i + 1}",
+                    CorporateEmail = $"instructor{i + 1}@lionair.co.id",
+                    RoleLevel = InstructorRoleLevel.TRI,
+                    CertifiedTypes = [planeType],
+                    AuthorizedSyllabi = ["InitialTypeRating", "RecurrentTraining", "LOFT", "OPC", "LPC"],
+                    LicenseExpiry = now.AddMonths(24),
+                    LastDutyEndTime = now.AddHours(-16),
+                    NextDutyStartTime = now.AddHours(8),
+                    CurrentMonthlyHours = 20,
+                    MaxMonthlyHours = 100,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                });
+            }
+            db.Instructors.AddRange(instructors);
+        }
 
         await db.SaveChangesAsync();
-        logger.LogInformation("[Seeder] hr schema seeded: 12 Trainees and 6 Instructors.");
+        logger.LogInformation("[Seeder] hr schema checked (pilots/instructors).");
     }
 
     private static async Task SeedAssetsAsync(AssetDbContext db, ILogger logger)
     {
         var now = DateTime.UtcNow;
 
-        // 6 Simulators (1 per aircraft type, all 'Ready')
-        var simulators = new List<Simulator>();
-        for (var i = 0; i < 6; i++)
+        if (await db.Simulators.AnyAsync())
         {
-            var planeType = AircraftTypes[i];
-            simulators.Add(new Simulator
-            {
-                SimulatorId = SimulatorIds[i],
-                Name = $"Jakarta {planeType} Full Flight Simulator",
-                BayNumber = $"Bay {i + 1}",
-                AircraftType = planeType,
-                Status = SimulatorStatus.Ready,
-                LastStatusChangedAt = now,
-                CreatedAt = now,
-                UpdatedAt = now,
-            });
+            logger.LogInformation("[Seeder] maint.simulators already has data — skipping simulator seed.");
         }
-        db.Simulators.AddRange(simulators);
+        else
+        {
+            // 6 Simulators (1 per aircraft type, all 'Ready')
+            var simulators = new List<Simulator>();
+            for (var i = 0; i < 6; i++)
+            {
+                var planeType = AircraftTypes[i];
+                simulators.Add(new Simulator
+                {
+                    SimulatorId = SimulatorIds[i],
+                    Name = $"Jakarta {planeType} Full Flight Simulator",
+                    BayNumber = $"Bay {i + 1}",
+                    AircraftType = planeType,
+                    Status = SimulatorStatus.Ready,
+                    LastStatusChangedAt = now,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                });
+            }
+            db.Simulators.AddRange(simulators);
+        }
 
-        // 6 Engineers (1-to-1 with 6 simulators)
-        var engineers = new List<Engineer>();
-        for (var i = 0; i < 6; i++)
+        if (await db.Engineers.AnyAsync())
         {
-            var planeType = AircraftTypes[i];
-            engineers.Add(new Engineer
-            {
-                EngineerID = EngineerIds[i],
-                EmployeeCode = $"LGA-ENG-{i + 1:000}",
-                FullName = $"Engineer {i + 1}",
-                ClearanceLevel = "L3",
-                HardwareRatings = [planeType],
-                ShiftStartTime = now.Date.AddHours(6),
-                ShiftEndTime = now.Date.AddHours(22),
-                IsOnCall = false,
-                CreatedAt = now,
-                UpdatedAt = now,
-            });
+            logger.LogInformation("[Seeder] maint.engineers already has data — skipping engineer seed.");
         }
-        db.Engineers.AddRange(engineers);
+        else
+        {
+            // 6 Engineers (1-to-1 with 6 simulators)
+            var engineers = new List<Engineer>();
+            for (var i = 0; i < 6; i++)
+            {
+                var planeType = AircraftTypes[i];
+                engineers.Add(new Engineer
+                {
+                    EngineerID = EngineerIds[i],
+                    EmployeeCode = $"LGA-ENG-{i + 1:000}",
+                    FullName = $"Engineer {i + 1}",
+                    ClearanceLevel = "L3",
+                    HardwareRatings = [planeType],
+                    ShiftStartTime = now.Date.AddHours(6),
+                    ShiftEndTime = now.Date.AddHours(22),
+                    IsOnCall = false,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                });
+            }
+            db.Engineers.AddRange(engineers);
+        }
 
         await db.SaveChangesAsync();
-        logger.LogInformation("[Seeder] maint schema seeded: 6 Simulators and 6 Engineers.");
+        logger.LogInformation("[Seeder] maint schema checked (simulators/engineers).");
     }
 }
