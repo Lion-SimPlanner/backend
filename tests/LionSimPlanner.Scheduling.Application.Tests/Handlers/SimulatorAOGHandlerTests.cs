@@ -173,6 +173,7 @@ public sealed class SimulatorAOGHandlerTests
                 It.IsAny<DateTime>(),
                 It.IsAny<DateTime>(),
                 It.IsAny<string>(),
+                null,
                 It.IsAny<CancellationToken>()),
             Times.Exactly(2));
     }
@@ -190,7 +191,7 @@ public sealed class SimulatorAOGHandlerTests
         emailMock
             .Setup(e => e.SendSessionCancelledAsync(
                 It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
-                It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("SMTP failure"));
 
         var sut = new SimulatorAOGHandler(

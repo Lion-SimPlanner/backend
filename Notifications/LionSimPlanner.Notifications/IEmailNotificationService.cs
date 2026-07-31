@@ -25,11 +25,13 @@ public interface IEmailNotificationService
     /// <summary>
     /// Dispatches a cancellation alert email when an AOG event or Admin cancels a session.
     /// Includes the specific cancellation reason so pilots know exactly why.
+    /// Emails go to the configured CancellationAlertList, plus any pilot addresses provided.
     /// </summary>
     Task SendSessionCancelledAsync(
         Guid sessionId,
         DateTime originalStartTime,
         DateTime originalEndTime,
         string cancellationReason,
+        IReadOnlyList<string>? recipientEmails = null,
         CancellationToken ct = default);
 }

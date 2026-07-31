@@ -52,14 +52,24 @@ public sealed class EmailNotificationService(
         DateTime originalStartTime,
         DateTime originalEndTime,
         string cancellationReason,
+        IReadOnlyList<string>? recipientEmails = null,
         CancellationToken ct = default)
     {
         // Cancellation emails go to a configured distribution list when we don't
         // have individual recipient addresses (AOG cascade scenario)
-        var recipients = _opts.CancellationAlertList;
+        var recipients = new List<string>(_opts.CancellationAlertList);
+        if (recipientEmails is not null)
+        {
+            foreach (var email in recipientEmails)
+            {
+                if (!recipients.Contains(email, StringComparer.OrdinalIgnoreCase))
+                    recipients.Add(email);
+            }
+        }
+
         if (recipients.Count == 0)
         {
-            logger.LogWarning("[Email] SendSessionCancelled: cancellation alert list is empty. Skipping for session {SessionId}.", sessionId);
+            logger.LogWarning("[Email] SendSessionCancelled: no recipients for session {SessionId}. Skipping.", sessionId);
             return;
         }
 

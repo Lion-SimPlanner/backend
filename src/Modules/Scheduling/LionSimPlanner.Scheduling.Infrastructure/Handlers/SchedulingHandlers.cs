@@ -231,7 +231,11 @@ public sealed class RescheduleSessionHandler(
 // ─────────────────────────────────────────────────────────────────────────────
 // CancelSessionHandler
 // ─────────────────────────────────────────────────────────────────────────────
-public sealed class CancelSessionHandler(SchedulingDbContext db, ILogger<CancelSessionHandler> logger)
+public sealed class CancelSessionHandler(
+    SchedulingDbContext db,
+    ISender mediator,
+    IEmailNotificationService emailService,
+    ILogger<CancelSessionHandler> logger)
     : IRequestHandler<CancelSessionCommand>
 {
     public async Task Handle(CancelSessionCommand req, CancellationToken ct)
@@ -244,6 +248,32 @@ public sealed class CancelSessionHandler(SchedulingDbContext db, ILogger<CancelS
         await db.SaveChangesAsync(ct);
         logger.LogInformation("[Scheduling] Session {Id} cancelled. Reason: {Reason}",
             req.SessionId, req.Reason);
+
+        // ── Notify assigned pilots + ops alert list via email ──────────────────
+        var recipientEmails = new List<string>();
+        var queue = await mediator.Send(new GetPriorityQueueQuery(), ct);
+
+        if (session.CaptainId.HasValue)
+        {
+            var captain = queue.FirstOrDefault(p => p.PilotId == session.CaptainId.Value);
+            if (captain is not null && !string.IsNullOrWhiteSpace(captain.CorporateEmail))
+                recipientEmails.Add(captain.CorporateEmail);
+        }
+
+        if (session.FirstOfficerId.HasValue)
+        {
+            var fo = queue.FirstOrDefault(p => p.PilotId == session.FirstOfficerId.Value);
+            if (fo is not null && !string.IsNullOrWhiteSpace(fo.CorporateEmail))
+                recipientEmails.Add(fo.CorporateEmail);
+        }
+
+        await emailService.SendSessionCancelledAsync(
+            session.SessionId,
+            session.StartTime,
+            session.EndTime,
+            req.Reason,
+            recipientEmails.Count > 0 ? recipientEmails : null,
+            ct);
     }
 }
 
@@ -388,7 +418,7 @@ public sealed class SimulatorAOGHandler(
             try
             {
                 await emailService.SendSessionCancelledAsync(
-                    s.SessionId, s.StartTime, s.EndTime, reason, ct);
+                    s.SessionId, s.StartTime, s.EndTime, reason, ct: ct);
             }
             catch (Exception ex)
             {
