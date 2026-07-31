@@ -4,7 +4,9 @@ using LionSimPlanner.Scheduling.Domain.Enums;
 using LionSimPlanner.Scheduling.Infrastructure;
 using LionSimPlanner.Scheduling.Infrastructure.Handlers;
 using LionSimPlanner.Shared.Events;
+using LionSimPlanner.Shared.Queries;
 using FluentAssertions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -58,7 +60,7 @@ public sealed class SimulatorAOGHandlerTests
 
         var emailMock = new Mock<IEmailNotificationService>();
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         await sut.Handle(CreateNotification(simId), CancellationToken.None);
 
@@ -80,7 +82,7 @@ public sealed class SimulatorAOGHandlerTests
 
         var emailMock = new Mock<IEmailNotificationService>();
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         await sut.Handle(CreateNotification(simId), CancellationToken.None);
 
@@ -100,7 +102,7 @@ public sealed class SimulatorAOGHandlerTests
 
         var emailMock = new Mock<IEmailNotificationService>();
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         await sut.Handle(CreateNotification(simId), CancellationToken.None);
 
@@ -121,7 +123,7 @@ public sealed class SimulatorAOGHandlerTests
 
         var emailMock = new Mock<IEmailNotificationService>();
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         await sut.Handle(CreateNotification(simA), CancellationToken.None);
 
@@ -140,7 +142,7 @@ public sealed class SimulatorAOGHandlerTests
 
         var emailMock = new Mock<IEmailNotificationService>();
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         var act = async () => await sut.Handle(CreateNotification(simId), CancellationToken.None);
 
@@ -163,7 +165,7 @@ public sealed class SimulatorAOGHandlerTests
 
         var emailMock = new Mock<IEmailNotificationService>();
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         await sut.Handle(CreateNotification(simId), CancellationToken.None);
 
@@ -173,6 +175,7 @@ public sealed class SimulatorAOGHandlerTests
                 It.IsAny<DateTime>(),
                 It.IsAny<DateTime>(),
                 It.IsAny<string>(),
+                It.IsAny<IReadOnlyList<string>>(),
                 It.IsAny<CancellationToken>()),
             Times.Exactly(2));
     }
@@ -190,14 +193,18 @@ public sealed class SimulatorAOGHandlerTests
         emailMock
             .Setup(e => e.SendSessionCancelledAsync(
                 It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
-                It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                It.IsAny<string>(),
+                It.IsAny<IReadOnlyList<string>>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("SMTP failure"));
 
         var sut = new SimulatorAOGHandler(
-            db, emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
+            db, Mock.Of<ISender>(), emailMock.Object, Mock.Of<ILogger<SimulatorAOGHandler>>());
 
         var act = async () => await sut.Handle(CreateNotification(simId), CancellationToken.None);
 
         await act.Should().NotThrowAsync();
     }
 }
+
+

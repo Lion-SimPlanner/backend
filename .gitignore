@@ -1,0 +1,70 @@
+## Build artifacts
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+
+## .NET
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.upgrade
+*.userproj
+*.publishproj
+*.cache
+*.csproj.user
+*.csproj.userprefs
+
+## NuGet
+*.nupkg
+*.snupkg
+*.nupkg.metadata
+*.pack
+*.dll
+*.pdb
+*.rsp
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+## Logs
+*.log
+*.tmp
+*.temp
+
+## Database / migrations
+supabase_migration.sql
+*.sqlite
+*.db
+
+## Environment / secrets
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+## Visual Studio
+.vsconfig
+[Tt]est[Rr]esult/
+[Bb]uild/

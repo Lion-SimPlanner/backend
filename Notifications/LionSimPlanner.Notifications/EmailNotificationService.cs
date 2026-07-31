@@ -52,21 +52,44 @@ public sealed class EmailNotificationService(
         DateTime originalStartTime,
         DateTime originalEndTime,
         string cancellationReason,
+        IReadOnlyList<string> recipientEmails,
         CancellationToken ct = default)
     {
-        // Cancellation emails go to a configured distribution list when we don't
-        // have individual recipient addresses (AOG cascade scenario)
-        var recipients = _opts.CancellationAlertList;
-        if (recipients.Count == 0)
+        if (recipientEmails.Count == 0)
         {
-            logger.LogWarning("[Email] SendSessionCancelled: cancellation alert list is empty. Skipping for session {SessionId}.", sessionId);
+            logger.LogWarning("[Email] SendSessionCancelled: no recipients for session {SessionId}. Skipping.", sessionId);
             return;
         }
 
         var subject = $"[Lion SimPlanner] ⚠ SESSION CANCELLED — {originalStartTime:ddd dd MMM yyyy HH:mm} UTC";
         var body    = SessionCancelledTemplate.Build(sessionId, originalStartTime, originalEndTime, cancellationReason);
 
-        await SendAsync(subject, body, recipients, ct);
+        await SendAsync(subject, body, recipientEmails, ct);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    public async Task SendSessionRescheduledAsync(
+        Guid sessionId,
+        DateTime originalStartTime,
+        DateTime originalEndTime,
+        DateTime newStartTime,
+        DateTime newEndTime,
+        string simulatorName,
+        string syllabusId,
+        IReadOnlyList<string> recipientEmails,
+        CancellationToken ct = default)
+    {
+        if (recipientEmails.Count == 0)
+        {
+            logger.LogWarning("[Email] SendSessionRescheduled: no recipients for session {SessionId}. Skipping.", sessionId);
+            return;
+        }
+
+        var subject = $"[Lion SimPlanner] SESSION RESCHEDULED — {newStartTime:ddd dd MMM yyyy HH:mm} UTC";
+        var body    = SessionRescheduledTemplate.Build(
+            sessionId, originalStartTime, originalEndTime, newStartTime, newEndTime, simulatorName, syllabusId);
+
+        await SendAsync(subject, body, recipientEmails, ct);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

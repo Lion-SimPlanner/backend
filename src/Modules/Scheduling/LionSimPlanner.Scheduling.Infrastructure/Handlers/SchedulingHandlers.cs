@@ -190,7 +190,9 @@ public sealed class PublishSessionHandler(
 }
 
 public sealed class RescheduleSessionHandler(
-    SchedulingDbContext db)
+    SchedulingDbContext db,
+    ISender mediator,
+    IEmailNotificationService emailService)
     : IRequestHandler<RescheduleSessionCommand, RescheduleSessionResult>
 {
     public async Task<RescheduleSessionResult> Handle(RescheduleSessionCommand req, CancellationToken ct)
@@ -219,10 +221,42 @@ public sealed class RescheduleSessionHandler(
         if (violations.Count > 0)
             return new RescheduleSessionResult(false, violations.AsReadOnly());
 
+        var originalStart = session.StartTime;
+        var originalEnd   = session.EndTime;
+
         session.StartTime = req.StartTime;
         session.EndTime = req.EndTime;
         session.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync(ct);
+
+        // ── Notify assigned pilots via email ───────────────────────────────────
+        var recipientEmails = new List<string>();
+        var queue = await mediator.Send(new GetPriorityQueueQuery(), ct);
+
+        if (session.CaptainId.HasValue)
+        {
+            var captain = queue.FirstOrDefault(p => p.PilotId == session.CaptainId.Value);
+            if (captain is not null && !string.IsNullOrWhiteSpace(captain.CorporateEmail))
+                recipientEmails.Add(captain.CorporateEmail);
+        }
+
+        if (session.FirstOfficerId.HasValue)
+        {
+            var fo = queue.FirstOrDefault(p => p.PilotId == session.FirstOfficerId.Value);
+            if (fo is not null && !string.IsNullOrWhiteSpace(fo.CorporateEmail))
+                recipientEmails.Add(fo.CorporateEmail);
+        }
+
+        await emailService.SendSessionRescheduledAsync(
+            session.SessionId,
+            originalStart,
+            originalEnd,
+            session.StartTime,
+            session.EndTime,
+            session.SimulatorId.ToString(),
+            session.SyllabusId,
+            recipientEmails,
+            ct);
 
         return new RescheduleSessionResult(true, []);
     }
@@ -231,7 +265,11 @@ public sealed class RescheduleSessionHandler(
 // ─────────────────────────────────────────────────────────────────────────────
 // CancelSessionHandler
 // ─────────────────────────────────────────────────────────────────────────────
-public sealed class CancelSessionHandler(SchedulingDbContext db, ILogger<CancelSessionHandler> logger)
+public sealed class CancelSessionHandler(
+    SchedulingDbContext db,
+    ISender mediator,
+    IEmailNotificationService emailService,
+    ILogger<CancelSessionHandler> logger)
     : IRequestHandler<CancelSessionCommand>
 {
     public async Task Handle(CancelSessionCommand req, CancellationToken ct)
@@ -244,6 +282,32 @@ public sealed class CancelSessionHandler(SchedulingDbContext db, ILogger<CancelS
         await db.SaveChangesAsync(ct);
         logger.LogInformation("[Scheduling] Session {Id} cancelled. Reason: {Reason}",
             req.SessionId, req.Reason);
+
+        // ── Notify assigned pilots + ops alert list via email ──────────────────
+        var recipientEmails = new List<string>();
+        var queue = await mediator.Send(new GetPriorityQueueQuery(), ct);
+
+        if (session.CaptainId.HasValue)
+        {
+            var captain = queue.FirstOrDefault(p => p.PilotId == session.CaptainId.Value);
+            if (captain is not null && !string.IsNullOrWhiteSpace(captain.CorporateEmail))
+                recipientEmails.Add(captain.CorporateEmail);
+        }
+
+        if (session.FirstOfficerId.HasValue)
+        {
+            var fo = queue.FirstOrDefault(p => p.PilotId == session.FirstOfficerId.Value);
+            if (fo is not null && !string.IsNullOrWhiteSpace(fo.CorporateEmail))
+                recipientEmails.Add(fo.CorporateEmail);
+        }
+
+        await emailService.SendSessionCancelledAsync(
+            session.SessionId,
+            session.StartTime,
+            session.EndTime,
+            req.Reason,
+            recipientEmails,
+            ct);
     }
 }
 
@@ -346,6 +410,7 @@ public sealed class CompleteGradingHandler(
 // ─────────────────────────────────────────────────────────────────────────────
 public sealed class SimulatorAOGHandler(
     SchedulingDbContext db,
+    ISender mediator,
     IEmailNotificationService emailService,
     ILogger<SimulatorAOGHandler> logger)
     : INotificationHandler<SimulatorAOGNotification>
@@ -383,12 +448,29 @@ public sealed class SimulatorAOGHandler(
         logger.LogWarning("[AOG] Cancelled {Count} session(s) for Simulator {Id}.",
             affected.Count, notification.SimulatorId);
 
+        var queue = await mediator.Send(new GetPriorityQueueQuery(), ct);
+
         foreach (var s in affected)
         {
+            var sessionEmails = new List<string>();
+            if (s.CaptainId.HasValue)
+            {
+                var captain = queue.FirstOrDefault(p => p.PilotId == s.CaptainId.Value);
+                if (captain is not null && !string.IsNullOrWhiteSpace(captain.CorporateEmail))
+                    sessionEmails.Add(captain.CorporateEmail);
+            }
+
+            if (s.FirstOfficerId.HasValue)
+            {
+                var fo = queue.FirstOrDefault(p => p.PilotId == s.FirstOfficerId.Value);
+                if (fo is not null && !string.IsNullOrWhiteSpace(fo.CorporateEmail))
+                    sessionEmails.Add(fo.CorporateEmail);
+            }
+
             try
             {
                 await emailService.SendSessionCancelledAsync(
-                    s.SessionId, s.StartTime, s.EndTime, reason, ct);
+                    s.SessionId, s.StartTime, s.EndTime, reason, sessionEmails, ct);
             }
             catch (Exception ex)
             {
