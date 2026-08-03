@@ -346,16 +346,14 @@ public sealed class ResolveDefectReportHandler(
 
         logger.LogInformation("[Asset] DefectReport {Id} resolved by {Code}.", req.DefectId, req.EngineerCode);
 
-        if (string.Equals(defect.Severity, "AOG", StringComparison.OrdinalIgnoreCase))
-        {
-            await mediator.Send(new ResolveDefectCommand(
-                defect.SimulatorId,
-                req.ResolutionNotes,
-                req.EngineerIdRef,
-                req.EngineerCode), ct);
+        await mediator.Send(new ResolveDefectCommand(
+            defect.SimulatorId,
+            req.ResolutionNotes,
+            req.EngineerIdRef,
+            req.EngineerCode), ct);
 
-            logger.LogInformation("[Asset] AOG lifted for Simulator {SimId}.", defect.SimulatorId);
-        }
+        logger.LogInformation("[Asset] Simulator {SimId} returned to Ready after defect resolution.",
+            defect.SimulatorId);
 
         await hubContext.Clients.All.SendAsync("DefectResolved", new
         {
