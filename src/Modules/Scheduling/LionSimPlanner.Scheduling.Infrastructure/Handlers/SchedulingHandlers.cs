@@ -65,6 +65,24 @@ public sealed class CreateSessionHandler(
             UpdatedAt           = DateTime.UtcNow
         };
 
+        var violations = new List<string>();
+
+        if (req.StartTime >= req.EndTime)
+            violations.Add("EndTime must be later than StartTime.");
+
+        if (req.StartTime < DateTime.UtcNow)
+            violations.Add("Cannot book a session in the past. StartTime must be in the future.");
+
+        var hasOverlap = await db.Sessions.AsNoTracking()
+            .Where(s => s.SimulatorId == session.SimulatorId)
+            .Where(s => s.Status != SessionStatus.Cancelled)
+            .AnyAsync(s => req.StartTime < s.EndTime && req.EndTime > s.StartTime, ct);
+        if (hasOverlap)
+            violations.Add("The selected simulator already has an overlapping session in that time window.");
+
+        if (violations.Count > 0)
+            return new CreateSessionResult(false, null, violations.AsReadOnly());
+
         var queue = await mediator.Send(new GetPriorityQueueQuery(), ct);
         var captain = queue.FirstOrDefault(p => p.PilotId == session.CaptainId);
         if (captain is null)
@@ -201,6 +219,9 @@ public sealed class RescheduleSessionHandler(
 
         if (req.StartTime >= req.EndTime)
             violations.Add("EndTime must be later than StartTime.");
+
+        if (req.StartTime < DateTime.UtcNow)
+            violations.Add("Cannot reschedule a session into the past. StartTime must be in the future.");
 
         var session = await db.Sessions.FirstOrDefaultAsync(s => s.SessionId == req.SessionId, ct);
         if (session is null)
