@@ -80,6 +80,16 @@ public sealed class CreateSessionHandler(
         if (hasOverlap)
             violations.Add("The selected simulator already has an overlapping session in that time window.");
 
+        if (req.InstructorId.HasValue)
+        {
+            var instructorBusy = await db.Sessions.AsNoTracking()
+                .Where(s => s.InstructorId == req.InstructorId.Value)
+                .Where(s => s.Status != SessionStatus.Cancelled)
+                .AnyAsync(s => req.StartTime < s.EndTime && req.EndTime > s.StartTime, ct);
+            if (instructorBusy)
+                violations.Add("The selected instructor is already assigned to an overlapping session in that time window.");
+        }
+
         if (violations.Count > 0)
             return new CreateSessionResult(false, null, violations.AsReadOnly());
 
@@ -238,6 +248,18 @@ public sealed class RescheduleSessionHandler(
 
         if (hasOverlap)
             violations.Add("The selected simulator already has an overlapping session in that time window.");
+
+        if (session.InstructorId.HasValue)
+        {
+            var instructorBusy = await db.Sessions.AsNoTracking()
+                .Where(s => s.SessionId != req.SessionId)
+                .Where(s => s.InstructorId == session.InstructorId.Value)
+                .Where(s => s.Status != SessionStatus.Cancelled)
+                .AnyAsync(s => req.StartTime < s.EndTime && req.EndTime > s.StartTime, ct);
+
+            if (instructorBusy)
+                violations.Add("The selected instructor is already assigned to an overlapping session in that time window.");
+        }
 
         if (violations.Count > 0)
             return new RescheduleSessionResult(false, violations.AsReadOnly());

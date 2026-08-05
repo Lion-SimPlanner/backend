@@ -24,14 +24,14 @@ public sealed class CreateSessionHandlerTests
         return new SchedulingDbContext(options);
     }
 
-    private static CreateSessionCommand CreateCommand(Guid simulatorId, DateTime start, DateTime end, Guid? captainId = null) => new(
+    private static CreateSessionCommand CreateCommand(Guid simulatorId, DateTime start, DateTime end, Guid? captainId = null, Guid? instructorId = null) => new(
         SimulatorId: simulatorId,
         SessionType: "Recurrent",
         StartTime: start,
         EndTime: end,
         CaptainId: captainId ?? Guid.NewGuid(),
         FirstOfficerId: null,
-        InstructorId: Guid.NewGuid(),
+        InstructorId: instructorId ?? Guid.NewGuid(),
         EngineerId: null,
         SyllabusId: "B737_RecurrentTraining",
         TraineeEmployeeCode: "PLT001");
@@ -204,5 +204,68 @@ public sealed class CreateSessionHandlerTests
         var result = await sut.Handle(command, CancellationToken.None);
 
         result.Success.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Handle_SameInstructorOverlappingSession_ReturnsViolation()
+    {
+        var db = CreateDbContext();
+        var instructorId = Guid.NewGuid();
+        var start = DateTime.UtcNow.AddDays(1);
+        var end = start.AddHours(2);
+
+        db.Sessions.Add(new SimulatorSession
+        {
+            SessionId = Guid.NewGuid(),
+            SimulatorId = Guid.NewGuid(),
+            SessionType = SessionType.Recurrent,
+            Status = SessionStatus.Scheduled,
+            StartTime = start.AddMinutes(30),
+            EndTime = end.AddMinutes(-30),
+            InstructorId = instructorId,
+            SyllabusId = "B737_RecurrentTraining",
+        });
+        db.SaveChanges();
+
+        var captainId = Guid.NewGuid();
+        var sut = CreateHandler(db, captainId: captainId);
+        var command = CreateCommand(Guid.NewGuid(), start, end, captainId, instructorId);
+
+        var result = await sut.Handle(command, CancellationToken.None);
+
+        result.Success.Should().BeFalse();
+        result.SessionId.Should().BeNull();
+        result.Violations.Should().Contain(v => v.Contains("instructor") && v.Contains("overlapping"));
+    }
+
+    [Fact]
+    public async Task Handle_DifferentInstructorSameTime_Succeeds()
+    {
+        var db = CreateDbContext();
+        var start = DateTime.UtcNow.AddDays(1);
+        var end = start.AddHours(2);
+
+        db.Sessions.Add(new SimulatorSession
+        {
+            SessionId = Guid.NewGuid(),
+            SimulatorId = Guid.NewGuid(),
+            SessionType = SessionType.Recurrent,
+            Status = SessionStatus.Scheduled,
+            StartTime = start.AddMinutes(30),
+            EndTime = end.AddMinutes(-30),
+            InstructorId = Guid.NewGuid(),
+            SyllabusId = "B737_RecurrentTraining",
+        });
+        db.SaveChanges();
+
+        var captainId = Guid.NewGuid();
+        var sut = CreateHandler(db, captainId: captainId);
+        var command = CreateCommand(Guid.NewGuid(), start, end, captainId);
+
+        var result = await sut.Handle(command, CancellationToken.None);
+
+        result.Success.Should().BeTrue();
+        result.SessionId.Should().NotBeNull();
+        result.Violations.Should().BeEmpty();
     }
 }
